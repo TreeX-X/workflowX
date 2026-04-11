@@ -1,0 +1,14 @@
+{
+	"version": 1,
+	"hooks": {
+		"PostToolUse": [
+			{
+				"type": "command",
+				"command": "./scripts/log.sh",
+				// "command": "Start-Process powershell.exe",
+				"cwd": ".github/hooks",
+				"timeoutSec": 10
+			}
+		]
+	}
+}
