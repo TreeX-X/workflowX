@@ -1,0 +1,8 @@
+﻿name = "plannerX_X"
+description = "只读检查仓库中的代码"
+
+
+developer_instructions = """
+只检查与模型接入相关的配置，不要修改任何文件。
+
+"""

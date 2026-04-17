@@ -1,17 +1,59 @@
 ﻿---
-description: Describe when these instructions should be loaded by the agent based on task context
+description: Use this instruction for all coding tasks to follow the user's X_x coding standards across projects, especially C++/Qt feature work, bug fixes, refactors, tests, and documentation updates.
 ---
 
-# Project Coding Standards X_x
+# X_x 通用编程规范（跨项目通用版本）
 
-## Code Style
-- Use the comment format: `/*-- comment content --*/`
-- Use lower camelCase naming, for example: `userModel`
+## 1. 适用范围
+- 适用于所有编程任务：新功能、修复缺陷、重构、测试、文档与代码评审。
+- 该规范可跨项目复用；遇到仓库既有规范时，优先遵循仓库规范并保持一致。
+- 对 C++/Qt 项目按本规范的 C++/Qt 增补条款执行。
 
+## 2. 核心原则
+- 优先最小侵入式修改，只改与当前需求直接相关的代码。
+- 默认保持现有行为与公开接口不变，除非需求明确要求变更行为。
+- 优先复用现有模块与工具函数，避免重复实现。
+- 避免引入新依赖库；若必须引入，先给出必要性、影响范围与替代方案。
 
-## Code Requirements
-- Prefer minimally invasive code changes whenever possible
-- Avoid introducing new dependency libraries
+## 3. 命名规范
+- 变量与函数使用 lower camelCase，例如 `userModel`、`initTableShow`。
+- 类、结构体、枚举类型名使用 PascalCase，例如 `ResourceMaintainer`。
+- 类成员优先使用 `x_` 前缀（如 `x_log`、`x_cleaned`）。
+- 全局对象使用 `g_` 前缀（如 `g_busi`）。
+- Qt 信号使用 `sigXxx` 命名（如 `sigShowPlanPath`）。
+- 宏与编译开关使用全大写下划线（如 `TEST_MODE`）。
 
-## Default Output
-- For every programming task, provide a summary of what was modified and what the result is.
+## 4. 注释规范
+- 使用注释格式：`/*-- 注释内容 --*/`。
+- 仅在必要处写注释：解释意图、边界条件、约束或非直观实现。
+- 避免“重复代码字面含义”的无效注释。
+- 分段说明可使用 `/*===== 模块说明 =====*/` 风格，但保持简洁。
+
+## 5. 代码风格与结构
+- 保持与原文件一致的缩进、花括号和空行风格，不做无关格式化。
+- include/import 按“系统/框架 -> 项目模块”分组，必要时加简短分组注释。
+- 倾向防御式编程：先做空值与边界检查，再执行业务逻辑。
+- 倾向早返回（guard clause）降低嵌套层级。
+- 单个函数保持单一职责；复杂逻辑拆分为可复用小函数。
+
+## 6. C++/Qt 增补约定
+- 指针/对象生命周期要明确：优先 RAII、Qt 父子关系或智能指针托管。
+- 涉及 UI 的逻辑需关注线程边界，避免在非 UI 线程直接操作 QWidget。
+- 连接信号槽时，优先使用类型安全的新式 connect 语法。
+- 修改 UI 交互时，注意保持信号阻塞与状态同步逻辑完整（例如 blockSignals 的成对处理）。
+
+## 7. 变更边界与风险控制
+- 非必要不修改第三方代码目录（如 `3rd/`）与自动生成文件。
+- 不顺带修复与当前需求无关的问题；可在结果中标注潜在问题。
+- 变更前先理解上下文，变更后至少做一次编译或关键路径验证。
+
+## 8. 任务输出要求（默认）
+- 每次编程任务都必须给出结果总结，至少包含：
+- 修改了什么（文件与关键点）。
+- 为什么这么改（设计或修复原因）。
+- 验证结果（已执行的检查/测试，或未执行原因）。
+
+## 9. 结果汇报模板
+- Modified: 列出修改文件与核心改动。
+- Result: 说明功能结果或问题修复结果。
+- Validation: 说明编译/测试/手工验证情况。

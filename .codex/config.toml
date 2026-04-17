@@ -1,1 +1,25 @@
-﻿# model = "openai/gpt-5.3-codex"
+﻿# config.toml
+
+# author : TreeX_x
+# date : 26-04-11
+
+# 模型设置
+model = "gpt-5.3-codex"
+model_reasoning_effort = "medium"
+
+# 沙盒策略
+sandbox_mode = "workspace-write"
+
+# 审批策略
+approval_policy = "never"
+
+# 记忆系统
+[memories]
+
+# 技能
+[skills]
+# 控制是否启用内置技能
+[skills.bundled]
+enabled = true
+
+
