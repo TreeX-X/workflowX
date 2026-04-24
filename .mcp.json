@@ -1,0 +1,14 @@
+﻿{
+  "mcpServers": {
+    "obsidian": {
+      "command": "npx.cmd",
+      "args": [
+        "--yes",
+        "--no-install",
+        "--quiet",
+        "@modelcontextprotocol/server-filesystem",
+        "E:\\Tree Workspace\\obsidian"
+      ]
+    }
+  }
+}

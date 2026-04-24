@@ -4,7 +4,8 @@
 # date : 26-04-11
 
 # 模型设置
-model = "gpt-5.3-codex"
+#model = "gpt-5.3-codex"
+model = "gpt-5.4-mini"
 model_reasoning_effort = "medium"
 
 # 沙盒策略
@@ -23,3 +24,10 @@ approval_policy = "never"
 enabled = true
 
 
+[mcp_servers.obsidianX_x]
+command = "npx.cmd"
+args = [
+    "-y",
+    "@modelcontextprotocol/server-filesystem",
+    "E:\\Tree Workspace\\obsidian"
+]
