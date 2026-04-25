@@ -5,7 +5,7 @@
 
 # 模型设置
 #model = "gpt-5.3-codex"
-model = "gpt-5.4-mini"
+#model = "gpt-5.4-mini"
 model_reasoning_effort = "medium"
 
 # 沙盒策略
