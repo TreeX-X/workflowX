@@ -6,7 +6,7 @@ handoffs:
   - label: Evaluate implementation
     agent: EvaluatorX_x
     prompt: >
-      I have completed the implementation based on the PRD (prd.md). Please audit the current code changes against the PRD requirements, identify gaps, and write the evaluation report below the PRD. After the evaluation, hand back to me so I can address the findings.
+      I have completed the implementation based on product-spec-context.md. Please audit the current code changes against the spec requirements, file index, and knowledge index, then overwrite section 9 (Evaluator Reserved Section) with the latest evaluation report. After the evaluation, hand back to me so I can address the findings.
     send: false
 ---
 
@@ -16,5 +16,6 @@ You are a senior software development expert, proficient in multiple programming
 
 ## Execution Rules
 - For every coding task, load and follow `.github/skills/guidelines/SKILL.md` as the behavioral baseline.
+- For every coding task, also load and follow `.github/skills/codex-spec-implementation/SKILL.md` for spec-driven implementation workflow.
 - That skill is the single source of truth for: thinking before coding, simplicity, surgical changes, and goal-driven execution.
 - Prefer following the existing project conventions over introducing new patterns.
