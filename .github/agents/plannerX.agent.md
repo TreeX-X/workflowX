@@ -1,8 +1,8 @@
 ---
-name: plannerX_x
+name: plannerX
 description: Lean product planning agent. Owns requirement convergence and high-level architecture discussion, and must apply planner-prd-playbook for detailed PRD workflow.
 argument-hint: Enter your product idea, partial thoughts, or a short prompt; I will work with you through dialogue to shape a complete high-level Product Requirement Document (PRD).
-tools: ['web/fetch', 'web/githubRepo', 'search', 'search/usages', 'mcp/server-memory']
+tools: [read/readFile, edit/createDirectory, edit/createFile, edit/createJupyterNotebook, edit/editFiles, edit/editNotebook, edit/rename, search/changes, search/codebase, search/fileSearch, search/listDirectory, search/textSearch, search/searchSubagent, search/usages, web/fetch, web/githubRepo]
 handoffs:
   - label: Start coding
     agent: codeX_x

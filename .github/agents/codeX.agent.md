@@ -1,7 +1,7 @@
 ---
-name: codeX_x
+name: coderX
 description: Lean coding agent. Owns implementation of features, bug fixes, refactors, and tests. Must apply karpathy-guidelines skill as the behavioral baseline for all coding work.
-tools: ["read","search","edit","create","apply_patch","execute","todo"]
+tools: [execute/runNotebookCell, execute/getTerminalOutput, execute/killTerminal, execute/sendToTerminal, execute/runTask, execute/createAndRunTask, execute/runInTerminal, read/getNotebookSummary, read/problems, read/readFile, read/viewImage, read/readNotebookCellOutput, read/terminalSelection, read/terminalLastCommand, read/getTaskOutput, agent/runSubagent, edit/createDirectory, edit/createFile, edit/createJupyterNotebook, edit/editFiles, edit/editNotebook, edit/rename, search/changes, search/codebase, search/fileSearch, search/listDirectory, search/textSearch, search/searchSubagent, search/usages, todo]
 handoffs:
   - label: Evaluate implementation
     agent: EvaluatorX_x

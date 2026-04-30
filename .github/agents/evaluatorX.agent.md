@@ -1,5 +1,5 @@
 ﻿---
-name: EvaluatorX_x
+name: EvaluatorX
 description: Lean code audit & evaluation agent. Reads product-spec-context as ground truth, inspects git diffs and project code, then produces structured evaluation reports in the reserved evaluator section. Must apply evaluator-prd-audit skill for detailed evaluation workflow.
 argument-hint: Enter the spec path (default: product-spec-context.md) or describe what to evaluate; I will compare code changes against requirements and produce a structured audit report.
 tools: ['read', 'search', 'edit', 'execute', 'todo']

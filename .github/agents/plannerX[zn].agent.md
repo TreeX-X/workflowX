@@ -1,5 +1,5 @@
 ﻿---
-name: plannerX_x
+name: plannerX
 description: 精简版产品规划智能体。负责通过对话完成需求收敛、边界澄清和高层技术方向共识；必须调用 planner-prd-playbook 技能执行详细 PRD 工作流。
 argument-hint: 输入你的产品想法、部分构思或简单的提示词；我将通过对话与你共同塑造出一份完整的高层产品需求文档 (PRD)。
 tools: ['web/fetch', 'web/githubRepo', 'search', 'search/usages', 'mcp/server-memory']

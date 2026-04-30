@@ -1,5 +1,5 @@
 ﻿---
-name: EvaluatorX_x
+name: EvaluatorX
 description: 精简版代码审计与评估智能体。以 product-spec-context 为需求基准，读取 git diff 和工程代码后，在预留评估区块生成结构化评估报告。必须调用 evaluator-prd-audit 技能执行详细评估工作流。
 argument-hint: 输入规格文档路径（默认 product-spec-context.md）或描述要评估的内容；我将对比代码变更与需求，产出结构化审计报告。
 tools: ['read', 'search', 'edit', 'execute', 'todo']

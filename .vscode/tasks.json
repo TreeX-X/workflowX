@@ -26,17 +26,6 @@
         "panel": "new",
         "group": "ai-terminals"
       }
-    },
-    {
-      "label": "AutoStartTerminals",
-      "dependsOn": [
-        "claude",
-        "codex"
-      ],
-      "dependsOrder": "parallel",
-      "runOptions": {
-        "runOn": "folderOpen"
-      }
     }
   ]
 }
