@@ -40,9 +40,19 @@ WorkflowX 是一个先进的多智能体编排框架，旨在为 AI 辅助开发
 
 - 🤖 **自动化与半自动化随时切换**：因为跨智能体状态通过清晰的 Markdown/混合文本持久化存储，人类开发者可以随时在某个环节介入，审查或修改文档，指导下一个智能体的方向。
 - 🧹 **拒绝上下文污染**：严格控制每一个子 Agent 的信息输入口径，不向它灌输冗余的历史对话，大幅降低大模型的幻觉概率。
-- 🔌 **通用化 CLI 接口支持**：无论是构建测试、执行脚本还是与 IDE 深度结合，依托底层的 `automated_pipeline` 与调度系统，能平滑兼容各大终端工作流引擎。
 
-## 📂 核心代码模块
+
+## 环境准备 (Setup & Installation)
+
+1. 确保安装了 Node.js (v18+) 与 Python 3.10+。
+2. 安装工作流所需的 MCP 工具：
+~~~
+npm install -g @modelcontextprotocol/server-memory @modelcontextprotocol/server-sequential-thinking
+~~~
+3. 提供的配置文件模板 `mcp.json.template`,在您的 AI Client (如 VSCode Copilot / Claude) 中配置并挂载上述 MCP。
+
+
+## 📂 子功能——多cli协同
 
 - `script/baseWorkFlow/automated_pipeline.py`：目录树快照监听与自动化流水线的核心，监控代码库文件变动与状态流转。
 - `script/baseWorkFlow/worker_daemon.py`：工作者守护进程，处理与终端交互的底层系统通信（包含后台击键注入等高级交互式协调）。
@@ -50,7 +60,6 @@ WorkflowX 是一个先进的多智能体编排框架，旨在为 AI 辅助开发
 
 
 ## 🌟 关于
-
 
 
 ---
