@@ -45,6 +45,16 @@ Modern LLMs perform best when focused on a single, well-defined problem. Workflo
 - `script/baseWorkFlow/worker_daemon.py`: The worker daemon that handles low-level system communication and terminal interaction (including advanced background keystroke injection orchestration).
 - `docx/`: Directory designated for passing the core hybrid state and knowledge docs between sub-agents.
 
+## 🛠️ Environments & MCP Setup
+
+Our advanced workflows heavily rely on toolsets provided by MCP (Model Context Protocol), such as the Memory graph and Sequential Thinking engine.
+To ensure the full capabilities of workflowX run flawlessly out-of-the-box, please configure your client environment:
+
+1. Ensure `Node.js` is correctly installed on your system (for `npx` execution).
+2. Locate the provided setup template `mcp.json.template` at the project root.
+3. Copy the `mcpServers` JSON block and merge it into the MCP settings file of your AI IDE (e.g., VS Code Copilot, Cursor, RooCode/Cline).
+4. The Orchestrator agent performs an automatic bootstrap check at initialization to guide you through resolving any missing dependencies.
+
 ## 🌟 About
 
 
