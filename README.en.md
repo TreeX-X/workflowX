@@ -50,7 +50,11 @@ npm install -g @modelcontextprotocol/server-memory @modelcontextprotocol/server-
 
 ## 🚀 Workflow & Usage
 
-**1. Awaken the Orchestrator & Iterate**
+**1. Framework Nature & Client Integration**
+WorkflowX is essentially a **lightweight, pure text-based configuration and instruction system**. It avoids rigid application lock-in, meaning you can seamlessly plug it into any AI IDE clients that support Agent/Skill architectures (e.g., **GitHub Copilot, Claude Code, or Codex**).
+> 💡 **Highly Recommended: GitHub Copilot**. Its native workspace context awareness and seamless SubAgent mounting capabilities synergize perfectly with this framework's pipeline logic and prompt caching models.
+
+**2. Awaken the Orchestrator & Iterate**
 - Call `@orchestratorX` (the master agent) and deliver your development intention or execution command (e.g., `/whole` for global development, `/local` for targeted hot-reloading).
 - **PlannerX (The Planner)**: Takes control of the initial requirements. Through multi-turn dialogue, it distills the intent into a single binding specification: `[Module]-hybrid.md`.
 - **CodeX (The Coder)**: Develops and verifies code based on the hybrid document. Once completed, it outputs a summary of changes via a minimalist "Bus Pipeline Payload".

@@ -53,7 +53,11 @@ npm install -g @modelcontextprotocol/server-memory @modelcontextprotocol/server-
 
 ## 🚀 框架工作流与使用指南 (Workflow & Usage)
 
-**1. 唤醒中枢调度与迭代流转**
+**1. 框架定位与平台接入**
+WorkflowX 本质上是一套**轻量纯粹的配置文件与指令集系统**。它不绑定死板的单一应用，您可以按需将其无缝接入到任何支持 Agent/Skill 体系的 AI IDE 客户端中（如 **GitHub Copilot, Claude Code, 或 Codex**）。
+> 💡 **强烈推荐使用 GitHub Copilot**: 其原生的 Workspace 感知能力和无缝的子智能体 (SubAgent) 唤起机制，能与本框架的总线管道与动静缓存模型完美契合，发挥出最极致的体验。
+
+**2. 唤醒中枢调度与迭代流转**
 - 呼叫 `@orchestratorX`（主智能体），并投递开发意图或执行指令（如 `/whole` 全局开发、`/local` 局部热更）。
 - **PlannerX (规划者)**：接手初始需求，通过多轮对话沉淀出仅有一份的 `[模组]-hybrid.md` 规范。
 - **CodeX (编码者)**：根据混合文档进行开发验证，通过后以“阶段成果总线负载 (Payload)”的形态输出修改摘要。
@@ -87,6 +91,15 @@ WorkflowX 通过独立的 SubAgent 机制配合“总线管道”解决此痛点
 
 ## 🌟 关于
 
+这是真实投入各个社区使用的一个开源实验性项目，旨在探索多智能体协同开发的最佳实践与架构设计。
+
+欢迎任何形式的讨论、建议与贡献！
+如何贡献：Fork 本仓库，提交 Pull Request，或直接在 Issues 中提出你的想法。
+
+公众号：[TreeX-AI]
+
+
+如果开源对你有帮助，欢迎点亮⭐，让更多人加入一起探索 AI 开发的未来！
 
 ---
 
