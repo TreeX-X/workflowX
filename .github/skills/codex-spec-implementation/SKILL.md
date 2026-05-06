@@ -1,6 +1,6 @@
 ﻿---
 name: codex-spec-implementation
-description: Spec-driven coding workflow for codeX agents. Use this skill whenever implementing, fixing, refactoring, or iterating code from product-spec-context.md, especially when file index, knowledge index, or evaluator findings are present.
+description: Spec-driven coding workflow for codeX agents. Use this skill whenever implementing, fixing, refactoring, or iterating code from hybrid docs or specified requirements, especially when file index, knowledge index, or evaluator findings are present.
 ---
 
 # codeX: Spec-Driven Implementation Skill
@@ -15,7 +15,7 @@ description: Spec-driven coding workflow for codeX agents. Use this skill whenev
 
 ## 输入文档约定
 
-默认读取 `product-spec-context.md`，关键区块如下：
+优先读取上游明确交接或用户主动引用的文档；若无明确指定，则自动寻找正确的 `[功能模组]-hybrid.md` 文档。若没有主动引用且上下文中也无记载文档，codeX 依然被允许直接使用现有对话上下文继续操作。当存在明确的 hybrid 文档时，需重点关注其以下关键区块：
 - `4` 核心功能与验收标准
 - `5` 非功能性需求
 - `7` 完成定义（DoD）
@@ -59,7 +59,7 @@ description: Spec-driven coding workflow for codeX agents. Use this skill whenev
 ### 第五步：交接 evaluator
 
 实现完成后，交给 evaluator 审核时必须明确：
-- 本轮基于 `product-spec-context.md` 的哪些需求实现
+- 本轮基于哪个特定的混合文档（如 `[功能模组]-hybrid.md`）或哪段特定上下文的需求实现了代码
 - 需审核的代码范围
 - 要求 evaluator 覆盖写 `9` 区块，不做增量追加
 
