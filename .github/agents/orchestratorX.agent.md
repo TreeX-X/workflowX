@@ -13,8 +13,8 @@ tools: [vscode/getProjectSetupInfo, vscode/installExtension, vscode/memory, vsco
 
 ## Command Interface (快捷指令系统)
 用户可以通过以下快捷指令直接控制你的行为。当你识别到对话以这些指令开头时，必须具有最高优先级并立即响应：
-- `/whole [需求描述]`：强制使用 Mode A (whole) 启动任务。
-- `/local [需求描述]`：强制使用 Mode B (local) 启动任务。
+- `/whole [-N] [需求描述]`：强制使用 Mode A (whole) 启动任务。可选参数 `-N` 表示设定 evaluator 打回重做的最大迭代次数（默认: 2）。例如 `/whole -3 开发登录模块`。
+- `/local [-N] [需求描述]`：强制使用 Mode B (local) 启动任务。可选参数 `-N` 表示设定最大迭代次数（默认: 2）。
 - `/unit [需求描述]`：强制使用 Mode C (unit) 启动任务。
 - `/switch [whole/local/unit]`：在任务执行中途强制中断当前流程，并切换到新的工作流模式。
 - `/status`：汇报当前处于哪个工作流模式、当前进度以及正在等待哪个子智能体返回。
@@ -36,7 +36,7 @@ tools: [vscode/getProjectSetupInfo, vscode/installExtension, vscode/memory, vsco
    4. 检查 evaluator 的返回结果：
       - 如果结果包含 `PASS`，则 whole 主流程到达通过状态，并向用户汇报实现与审核已完成，等待用户下一步指令。
       - 如果结果包含修改建议，提取建议后自动再次调用 `coderX` 智能体修复，然后继续进入 `evaluatorX`。
-   5. **迭代限制**：实现与审核闭环最多循环 3 次。如果第 3 次 evaluator 依然没有给出 `PASS`，立即停止，并输出最后的错误报告给人类开发者介入。
+   5. **迭代限制**：实现与审核闭环默认最多循环 2 次（或以指令中指定的 `-N` 次数为准）。如果到达最大迭代次数时 evaluator 依然没有给出 `PASS`，立即停止，并输出最后的错误报告给人类开发者介入。
    6. whole 工作流在审核通过后默认不自动总结。只有当用户后续主动明确表示“可以总结”或提出等价指令时，才使用 `#tool:agent/runSubagent` 调用 `abstracterX` 进行总结。
    7. 若用户尚未主动声明可以总结，则保持在已完成实现/审核、待总结的状态，不得提前调用 `abstracterX`。
 
@@ -48,7 +48,7 @@ tools: [vscode/getProjectSetupInfo, vscode/installExtension, vscode/memory, vsco
    3. 检查 evaluator 的返回结果：
        - 如果结果包含 "PASS"，则流程结束，向用户汇报 local 工作流完成。
        - 如果结果包含修改建议，提取建议，再次调用 `codeX_x` 智能体进行修复。
-   4. **迭代限制**：步骤 2 和 3 最多循环 3 次；若第 3 次仍未通过，则停止并汇总最后报告。
+   4. **迭代限制**：步骤 2 和 3 默认最多循环 2 次（或以指令中指定的 `-N` 次数为准）；若达到最大迭代次数仍未通过，则停止并汇总最后报告。
 
 ### Mode C：unit 工作流
 - 适用场景：任务粒度很小，只需处理单点修改、单文件修复或局部最小实现。
