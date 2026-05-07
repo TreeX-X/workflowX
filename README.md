@@ -111,7 +111,7 @@ Made by [@TreeX-X](https://github.com/TreeX-X)
 
 </div>
 
-## Star History
+## ⭐星级历史
 
 <a href="https://www.star-history.com/#TreeX-X/workflowX&Date">
  <picture>

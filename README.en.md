@@ -1,6 +1,6 @@
 ﻿<div align="center">
 
-[中文](./READNE.md) · **English**
+[中文](./README.md) · **English**
 
 # 🧰 WorkflowX: SubAgent-based Hybrid Orchestration Workflow
 
@@ -86,7 +86,12 @@ We've finely customized a suite of Skills that precisely combat common LLM struc
 
 ## 🌟 About
 
+This is an open-source experimental project deployed across real communities, aiming to explore best practices and architectural designs for multi-agent collaborative development.
 
+Discussions, suggestions, and contributions of any kind are welcome!
+How to contribute: Fork this repo, submit a Pull Request, or share your ideas directly in Issues.
+
+If this project helps you, feel free to give it a ⭐ so more people can join us in exploring the future of AI-driven development!
 
 ---
 
@@ -97,3 +102,13 @@ We've finely customized a suite of Skills that precisely combat common LLM struc
 Made by [@TreeX-X](https://github.com/TreeX-X)
 
 </div>
+
+## ⭐ Star History
+
+<a href="https://www.star-history.com/#TreeX-X/workflowX&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=TreeX-X/workflowX&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=TreeX-X/workflowX&type=date&theme=light&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=TreeX-X/workflowX&type=date&theme=light&legend=top-left" />
+ </picture>
+</a>
