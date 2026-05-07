@@ -55,7 +55,7 @@ npm install -g @modelcontextprotocol/server-memory @modelcontextprotocol/server-
 
 **1. 框架定位与平台接入**
 WorkflowX 本质上是一套**轻量纯粹的配置文件与指令集系统**。它不绑定死板的单一应用，您可以按需将其无缝接入到任何支持 Agent/Skill 体系的 AI IDE 客户端中（如 **GitHub Copilot, Claude Code, 或 Codex**）。
-> 💡 **强烈推荐使用 GitHub Copilot**: 其原生的 Workspace 感知能力和无缝的子智能体 (SubAgent) 唤起机制，能与本框架的总线管道与动静缓存模型完美契合，发挥出最极致的体验。
+> 💡 **本工程推荐使用 GitHub Copilot**: 其原生的 Workspace 感知能力和无缝的子智能体 (SubAgent) 唤起机制，能与本框架的总线管道与动静缓存模型完美契合，发挥出最极致的体验。
 
 **2. 唤醒中枢调度与迭代流转**
 - 呼叫 `@orchestratorX`（主智能体），并投递开发意图或执行指令（如 `/whole` 全局开发、`/local` 局部热更）。
@@ -110,3 +110,13 @@ WorkflowX 通过独立的 SubAgent 机制配合“总线管道”解决此痛点
 Made by [@TreeX-X](https://github.com/TreeX-X)
 
 </div>
+
+## Star History
+
+<a href="https://www.star-history.com/?type=date&repos=nidhinjs%2Fclaude-skills">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=nidhinjs/claude-skills&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=nidhinjs/claude-skills&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=nidhinjs/claude-skills&type=date&legend=top-left" />
+ </picture>
+</a>
