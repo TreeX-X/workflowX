@@ -56,9 +56,9 @@ WorkflowX is essentially a **lightweight, pure text-based configuration and inst
 
 **2. Awaken the Orchestrator & Iterate**
 - Call `@orchestratorX` (the master agent) and deliver your development intention or execution command (e.g., `/whole` for global development, `/local` for targeted hot-reloading).
-- **PlannerX (The Planner)**: Takes control of the initial requirements. Through multi-turn dialogue, it distills the intent into a single binding specification: `[Module]-hybrid.md`.
-- **CodeX (The Coder)**: Develops and verifies code based on the hybrid document. Once completed, it outputs a summary of changes via a minimalist "Bus Pipeline Payload".
-- **EvaluatorX (The Evaluator)**: Directionally inspects code changes and specs based on the Pipeline Payload. It writes an audit report directly into the `hybrid` document, proposes the next targeted payload for fixes, and hands control back.
+- **plannerX (The Planner)**: Takes control of the initial requirements. Through multi-turn dialogue, it distills the intent into a single binding specification: `[Module]-hybrid.md`.
+- **coderX (The Coder)**: Develops and verifies code based on the hybrid document. Once completed, it outputs a summary of changes via a minimalist "Bus Pipeline Payload".
+- **evaluatorX (The Evaluator)**: Directionally inspects code changes and specs based on the Pipeline Payload. It writes an audit report directly into the `hybrid` document, proposes the next targeted payload for fixes, and hands control back.
 - Iteration loops can be safely constrained (e.g., max 2 rounds to prevent infinite loops) using the `-N` configuration parameter.
 
 ## 💎 Core Advantages: Solving AI Development Bottlenecks
@@ -66,7 +66,7 @@ WorkflowX is essentially a **lightweight, pure text-based configuration and inst
 **1. Bus Pipeline Mechanism — Eradicating Context Hallucinations**
 The biggest flaw in traditional AI development is the continuous stacking and pollution of dialog context, causing the AI to drift off course. WorkflowX solves this via isolated SubAgents and a "Bus Pipeline":
 - **Pristine Awakening**: When sub-agents (coder, evaluator) are awakened, they do not inherit redundant discussions and historical errors. They start fresh, focused, and operating at absolute peak intelligence every time.
-- **Payload Handoff**: Agents do not throw long historical texts at each other. They feed each other minimalist "Payloads." (E.g., CodeX outputs: "I focused on fixing Logic B in File A, please review directionally"). This drastically improves evaluation focus and almost entirely eliminates hallucinations.
+- **Payload Handoff**: Agents do not throw long historical texts at each other. They feed each other minimalist "Payloads." (E.g., coderX outputs: "I focused on fixing Logic B in File A, please review directionally"). This drastically improves evaluation focus and almost entirely eliminates hallucinations.
 
 **2. Agile Single Source of Truth — Hybrid Docs Constraint**
 Agile development requires spontaneous shifts in direction, but scattered PRDs often lose sync with the code. 

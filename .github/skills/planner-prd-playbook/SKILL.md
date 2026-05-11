@@ -46,7 +46,7 @@ description: Structured PRD planning playbook for planner agents. Use this skill
 
 - 允许使用 `mcp/server-memory` 作为对话阶段的中间记忆缓存。
 - 最终交付必须回写到 `[功能模组]-hybrid.md`（其中“功能模组”需根据用户需求自动总结生成），不得依赖外部记忆作为唯一事实来源。
-- coder/evaluator 交接时，默认只传递该 `[功能模组]-hybrid.md` 路径与目标标题，不传递冗余上下文正文。
+- coderX/evaluatorX 交接时，默认只传递该 `[功能模组]-hybrid.md` 路径与目标标题，不传递冗余上下文正文。
 - 采用“单一主索引 + 快照引用”：`8.1` 为唯一完整索引，`8.2` 与 `8.3` 仅记录增量与引用，不做全量重复抄录。
 
 ### 3.2 server-memory 到 PRD 的回写规则

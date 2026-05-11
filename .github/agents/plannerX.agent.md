@@ -5,7 +5,7 @@ argument-hint: Enter your product idea, partial thoughts, or a short prompt; I w
 tools: [read/readFile, edit/createDirectory, edit/createFile, edit/createJupyterNotebook, edit/editFiles, edit/editNotebook, edit/rename, search/changes, search/codebase, search/fileSearch, search/listDirectory, search/textSearch, search/searchSubagent, search/usages, web/fetch, web/githubRepo]
 handoffs:
   - label: Start coding
-    agent: codeX_x
+    agent: coderX
     prompt: Please start the technical implementation and coding based on the approved PRD above.
     send: false
 ---

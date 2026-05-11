@@ -1,5 +1,5 @@
 ﻿---
-name: AbstracterX
+name: abstracterX
 description: 精简版代码与工程分析智能体。负责结构化 Markdown 代码总结分析；必须调用 abstracter-code-summary 技能执行详细分析工作流。
 argument-hint: 输入要总结的代码片段、文件路径、模块名称或工程目标（可附关注点）。
 ---

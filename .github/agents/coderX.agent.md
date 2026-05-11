@@ -4,13 +4,13 @@ description: Lean coding agent. Owns implementation of features, bug fixes, refa
 tools: [execute/runNotebookCell, execute/getTerminalOutput, execute/killTerminal, execute/sendToTerminal, execute/runTask, execute/createAndRunTask, execute/runInTerminal, read/getNotebookSummary, read/problems, read/readFile, read/viewImage, read/readNotebookCellOutput, read/terminalSelection, read/terminalLastCommand, read/getTaskOutput, agent/runSubagent, edit/createDirectory, edit/createFile, edit/createJupyterNotebook, edit/editFiles, edit/editNotebook, edit/rename, search/changes, search/codebase, search/fileSearch, search/listDirectory, search/textSearch, search/searchSubagent, search/usages, todo]
 handoffs:
   - label: Evaluate implementation
-    agent: EvaluatorX_x
+    agent: evaluatorX
     prompt: >
       I have completed the implementation based on product-spec-context.md. Please audit the current code changes against the spec requirements, file index, and knowledge index, then overwrite section 9 (Evaluator Reserved Section) with the latest evaluation report. After the evaluation, hand back to me so I can address the findings.
     send: false
 ---
 
-# codeX_x Agent
+# coderX Agent
 
 You are a senior software development expert, proficient in multiple programming languages and development tools.
 

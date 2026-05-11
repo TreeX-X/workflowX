@@ -1,13 +1,13 @@
 ﻿---
 name: codex-spec-implementation
-description: Spec-driven coding workflow for codeX agents. Use this skill whenever implementing, fixing, refactoring, or iterating code from hybrid docs or specified requirements, especially when file index, knowledge index, or evaluator findings are present.
+description: Spec-driven coding workflow for coderX agents. Use this skill whenever implementing, fixing, refactoring, or iterating code from hybrid docs or specified requirements, especially when file index, knowledge index, or evaluator findings are present.
 ---
 
-# codeX: Spec-Driven Implementation Skill
+# coderX: Spec-Driven Implementation Skill
 
 ## 目标
 
-让 codeX 按统一流程执行开发：
+让 coderX 按统一流程执行开发：
 - 先读规格与验收标准
 - 再读工程文件索引与知识索引
 - 再读审核报告并按优先级修复
@@ -15,7 +15,7 @@ description: Spec-driven coding workflow for codeX agents. Use this skill whenev
 
 ## 输入文档约定
 
-优先读取上游明确交接或用户主动引用的文档；若无明确指定，则自动寻找正确的 `[功能模组]-hybrid.md` 文档。若没有主动引用且上下文中也无记载文档，codeX 依然被允许直接使用现有对话上下文继续操作。当存在明确的 hybrid 文档时，需重点关注其以下关键区块：
+优先读取上游明确交接或用户主动引用的文档；若无明确指定，则自动寻找正确的 `[功能模组]-hybrid.md` 文档。若没有主动引用且上下文中也无记载文档，coderX 依然被允许直接使用现有对话上下文继续操作。当存在明确的 hybrid 文档时，需重点关注其以下关键区块：
 - `4` 核心功能与验收标准
 - `5` 非功能性需求
 - `7` 完成定义（DoD）
@@ -23,12 +23,13 @@ description: Spec-driven coding workflow for codeX agents. Use this skill whenev
 - `8.2` Memory Snapshot（关键约束）
 - `8.3` 需求相关索引增量引用
 - `9` 评估报告（Evaluator Reserved Section）
+- `10` 迭代检查点（Incremental Checkpoints）— **由 orchestrator 自动管理，coderX 禁止修改此区块**
 
 ### Memory Snapshot 与知识图谱使用规范
 
 - Hybrid 文档奉行"树干与树叶分离"原则：Markdown 文件内（如 `8.2`）只存"树干"（高阶需求结构与知识节点大纲/指针）。
 - "树叶"（具体的代码逻辑关系、代码级上下文约束等详尽信息）完全存储在 `mcp/server-memory` 的节点（Nodes）中。
-- codeX 在实现前，读取 `8.2` 获得所需的图谱节点大纲后，**必须主动通过 MCP Server 调用** 相关工具（如 `mcp_memory_open_nodes` 或 `mcp_memory_search_nodes`）去查询检索与当前实现任务直接关切的 Node 详情数据。不要期望 Markdown 里包含全部细节。
+- coderX 在实现前，读取 `8.2` 获得所需的图谱节点大纲后，**必须主动通过 MCP Server 调用** 相关工具（如 `mcp_memory_open_nodes` 或 `mcp_memory_search_nodes`）去查询检索与当前实现任务直接关切的 Node 详情数据。不要期望 Markdown 里包含全部细节。
 
 ## 执行流程
 
@@ -59,12 +60,22 @@ description: Spec-driven coding workflow for codeX agents. Use this skill whenev
 
 ### 第五步：总线管道输出与交接 evaluator (Bus Pipeline Handoff)
 
-实现完成后，不仅要维护 hybrid 文档与图谱快照，还**必须在调用任务完成或呼叫子智能体之前，在当前的对话上下文中主动输出一份标准化的"阶段成果总线负载 (Pipeline Payload)"**，供后续的 evaluatorX 定向读取审核。负载内容应包含：
-- **已完成功能项**：精准列出本轮完成的 PRD 需求模块名称或编号。
-- **核心修改清单**：罗列主要的修改文件及其扮演的逻辑角色（做了哪些核心变更）。
-- **提请定向审核点**：指明此次修改的复杂逻辑或外部依赖，提示 evaluatorX 重点审阅，避免其盲目遍历。
+实现完成后，不仅要维护 hybrid 文档与图谱快照，还**必须在调用任务完成或呼叫子智能体之前，在当前的对话上下文中主动输出一份标准化的"阶段成果总线负载 (Pipeline Payload)"**，供后续的 evaluatorX 定向读取审核。
 
-并附带指令要求 evaluatorX 后续覆盖写入 hybrid 文档的 `9` 区块。
+> ⚠️ **格式强制要求**：orchestrator 会对本 Payload 进行结构化校验，校验不通过将被打回重写。请严格按照以下必填字段输出。
+
+负载内容格式如下：
+
+```markdown
+### 📦 Bus Pipeline Payload: Implementation Summary
+- **已完成功能项**: [列出本轮完成的 PRD 需求模块名称或编号]
+- **核心修改清单**:
+  - [文件路径] — [修改角色/逻辑摘要]
+  - ...
+- **提请定向审核点**: [指明复杂逻辑或外部依赖，提示 evaluatorX 重点审阅]
+- **关联 Hybrid 文档**: [hybrid 文档路径]
+- **覆盖写入要求**: 请 evaluatorX 将评估报告覆盖写入 hybrid 文档的 `9.*` 区块
+```
 
 ## 输出约束
 

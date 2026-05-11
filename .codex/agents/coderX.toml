@@ -1,4 +1,4 @@
-﻿name = "codeX"
+﻿name = "coderX"
 description = "Lean coding agent. Owns implementation of features, bug fixes, refactors, and tests. Must apply karpathy-guidelines skill as the behavioral baseline for all coding work."
 
 developer_instructions = """

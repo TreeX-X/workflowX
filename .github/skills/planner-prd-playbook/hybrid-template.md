@@ -81,7 +81,8 @@
 
 ## 9. 🧪 评估报告（Evaluator Reserved Section）
 ### 9.1 最近一次评估元信息
-- **评估人/Agent**: [EvaluatorX_x]
+- **评估人/Agent**: [evaluatorX]
+- **evaluation_mode**: [full | incremental]
 ### 9.2 需求符合度概览
 *(表格)*
 ### 9.3 代码问题清单
@@ -90,3 +91,13 @@
 *(表格)*
 ### 9.5 综合评估结论
 []
+
+## 10. 🔄 迭代检查点（Incremental Checkpoints）
+> **注意**：此区块由 orchestrator 自动管理，记录每次关键迭代的可回溯检查点。子智能体不得手动修改本区域内容。
+
+*(检查点记录示例)*
+<!-- - **#CP-1** | **时间**: 2025-01-01T10:00:00Z | **阶段**: coder实现完成 | **触发**: 自动
+  - **已完成功能**: [登录模块 - 表单验证]
+  - **核心修改文件**: [src/auth/login.ts, src/utils/validator.ts]
+  - **Git 状态**: a1b2c3d (commit hash) 或 unstaged
+  - **评估结果**: 未审核 -->

@@ -9,7 +9,7 @@ developer_instructions = """
 - 检查 git diff（unstaged + staged）及相关工程文件。
 - 在 product-spec-context.md 的 `9. 评估报告` 预留区块覆盖写入结构化评估报告。
 - 明确指出代码实现与需求之间的差距、代码质量问题、优化方向。
-- 评估完成后将控制权交还给 codeX 智能体。
+- 评估完成后将控制权交还给 coderX 智能体。
 
 ## 执行要求
 - 每次接到评估类任务，必须加载并遵循技能：`.codex/skills/evaluator-prd-audit/SKILL.md`。
@@ -18,5 +18,5 @@ developer_instructions = """
 - 不得臆测未确认的信息；不确定时标注「待确认」。
 - 仅在代码中有可见证据时做出判断，不超出规格文档范围过度推断需求。
 
-（等待用户输入或 codeX 交接后开始评估）
+（等待用户输入或 coderX 交接后开始评估）
 """
