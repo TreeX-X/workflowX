@@ -53,6 +53,43 @@
   - 适配状态表全部更新为 🟢 完整
   - 适配原则新增"自动化同步"条目，描述 `script/sync.py` 的作用
 
+### 13. orchestratorX `/whole -b` 分支管理参数
+- **变更位置**: `src/agents/orchestratorX.md` → 同步至三平台 orchestratorX agent
+- **内容**: 为 `/whole` 指令新增 `-b branch-name` 可选参数：
+  - 启动前自动 `git stash` + 记录原分支 + `git checkout -b` 创建工作分支
+  - 完成后（evaluator PASS 或迭代终止）自动切回原分支 + `git merge --no-commit --no-ff` 合并（不自动 commit，改动留在暂存区供人类审查）
+  - 未指定分支名时自动生成 `wfx/whole-{关键词}-{时间戳}` 格式
+  - 工作分支不会自动删除，用户自行决定
+
+### 14. orchestratorX 自动路由 (Auto-Routing)
+- **变更位置**: `src/agents/orchestratorX.md` → 同步至三平台 orchestratorX agent
+- **内容**: 新增自动路由机制，当用户未显式指定工作流模式时，基于以下维度自动推断：
+  - 涉及文件数（跨模块 → whole / 单文件 → unit）
+  - 关键词信号（「新增功能」→ whole / 「修复」→ unit 等）
+  - 代码影响范围（新增 vs 仅修改）
+  - 是否需要 PRD
+  - 匹配度 ≥ 2/4 维度命中同一模式时自动路由，否则向用户确认
+  - 自动路由结果不得跳过门禁校验规则
+
+### 15. orchestratorX `/status` 响应式指令
+- **变更位置**: `src/agents/orchestratorX.md` → 同步至三平台 orchestratorX agent
+- **内容**: `/status` 为只读零副作用指令，执行时从当前 hybrid 文档快速提取：
+  - 已完成的工作（从 `10. 迭代检查点` 中「评估通过」条目提取）
+  - 未完成/进行中的工作（从 `9. 评估报告` 中「需修复」记录 + 未勾选 DoD 提取）
+  - 最近检查点摘要
+  - 当前分支信息
+  - 无 hybrid 文档时提示用户先启动工作流
+
+### 16. orchestratorX 职责拆分：精简调度器 + orchestrator-playbook 技能
+- **变更位置**:
+  - `src/agents/orchestratorX.md` — 从 253 行精简至 ~110 行，仅保留调度逻辑
+  - `src/skills/orchestrator-playbook/SKILL.md` — 新增，承接所有触发式规程（~190 行）
+  - 同步至三平台 agent 和 skill 目录
+- **内容**: 将 orchestratorX 从"调度器 + 规程手册"单体拆分为职责清晰的两层结构：
+  - **orchestratorX（精简调度器）**：仅保留 Command Interface、SubAgent Convention（简要版）、Workflow Modes（流程骨架 + 引用 playbook）、Auto-Routing、Start Rule
+  - **orchestrator-playbook（运行时规程技能）**：承载所有首次调用和触发式流程，包括 §1 环境初始化与 MCP 降级、§2 Bus Payload Schema 与校验规则、§3 增量检查点与回滚机制、§4 Prompt 预处理规则、§5 Status Report 规范
+  - orchestratorX 在执行对应操作前加载 playbook 的对应章节，实现"按需加载规程、不污染调度逻辑"的职责隔离
+
 ---
 
 ## [未发布] - 2026-05-11
