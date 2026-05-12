@@ -1,4 +1,4 @@
-﻿name = "evaluatorX[zn]"
+name = "evaluatorX_zh"
 description = "精简版代码审计与评估智能体。以 product-spec-context 为需求基准，读取 git diff 和工程代码后，在预留评估区块生成结构化评估报告。必须调用 evaluator-prd-audit 技能执行详细评估工作流。"
 
 developer_instructions = """

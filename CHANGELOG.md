@@ -4,7 +4,58 @@
 
 ---
 
-## [未发布] - 2025-07-07
+## [未发布] - 2026-05-12
+
+### 8. `src/` 单一真相源 + `sync.py` 跨平台同步管线
+- **变更位置**:
+  - `src/agents/` — 新增 9 个平台无关 Agent 源文件（6 英文 + 3 中文 `_zh` 变体）
+  - `src/skills/` — 新增 30 个 Skill 源文件（从 `.github/skills/` 复制，替换平台特定路径为 `{{PLATFORM_SKILLS}}` 占位符）
+  - `script/sync.py` — 新增 ~440 行 Python CLI 同步脚本
+  - `script/sync_config.json` — 新增 Agent 元数据配置（tools / handoffs 按平台定义）
+- **内容**: 将 WorkflowX 从"各平台目录手写维护"重构为**单一真相源 + 自动同步**架构：
+  - `src/` 作为所有 Agent / Skill 的平台无关源定义
+  - `sync.py` 从 `src/` 生成三平台目录结构（`.github/`、`.codex/`、`.claude/`），自动替换 `{{PLATFORM_SKILLS}}` 占位符并注入平台特定元数据
+  - 支持 `--platform {copilot,codex,claude}`、`--dry-run`、`--verify`、`--agents-only`、`--skills-only` CLI 参数
+  - `sync_config.json` 定义每个 Agent 在各平台的 tools 列表和 handoffs 配置
+  - 修复 UTF-8 BOM 编码兼容问题（所有文件读写统一使用 `utf-8-sig`）
+
+### 9. `[zn]` → `_zh` 命名统一
+- **变更位置**:
+  - `src/agents/` — 中文变体文件统一使用 `_zh` 后缀
+  - `.github/agents/` — 删除旧 `[zn]` 命名文件，同步生成 `_zh` 版本
+  - `.codex/agents/` — 删除旧 `_zn` 命名文件，同步生成 `_zh` 版本
+- **内容**: 将所有中文变体智能体的命名后缀统一为 `_zh`（取代不一致的 `[zn]` / `_zn`）：
+  - `plannerX[zn].agent.md` → `plannerX_zh.agent.md`
+  - `evaluatorX[zn].agent.md` → `evaluatorX_zh.agent.md`
+  - `abstracterX[zn].agent.md` → `abstracterX_zh.agent.md`
+  - Codex 侧 `_zn.toml` → `_zh.toml` 同步更新
+
+### 10. 移除 Cursor 适配
+- **变更位置**: `PLATFORM-MAP.md`
+- **内容**: 从跨平台概念映射表中移除 Cursor 相关内容：
+  - 移除概念映射表中的 Cursor 列
+  - 移除 Agent / Skill 格式对照中的 Cursor 章节
+  - 移除持久指令对照表中的 Cursor 行
+  - 移除适配状态表中的 Cursor 行
+  - 移除适配原则中对 Cursor 的引用
+
+### 11. Claude Code 完整适配
+- **变更位置**:
+  - `.claude/agents/` — 从空目录生成 9 个 Agent 文件
+  - `.claude/skills/` — 新增 30 个 Skill 文件（原仅 1 个）
+  - `PLATFORM-MAP.md` — 适配状态从 🟡 部分更新为 🟢 完整
+- **内容**: 通过 `sync.py --platform claude` 实现 Claude Code 全量适配，生成 `.claude/agents/*.md` 和 `.claude/skills/*/SKILL.md`，路径中的占位符自动替换为 `.claude/skills`。
+
+### 12. PLATFORM-MAP.md 更新
+- **变更位置**: `PLATFORM-MAP.md`
+- **内容**:
+  - 目标平台从 4 个缩减为 3 个：GitHub Copilot、Claude Code、Codex CLI
+  - 适配状态表全部更新为 🟢 完整
+  - 适配原则新增"自动化同步"条目，描述 `script/sync.py` 的作用
+
+---
+
+## [未发布] - 2026-05-11
 
 ### 1. 子智能体命名统一
 - **变更位置**:

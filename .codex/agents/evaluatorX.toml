@@ -1,4 +1,4 @@
-﻿name = "evaluatorX"
+name = "evaluatorX"
 description = "Lean code audit & evaluation agent. Reads product-spec-context as ground truth, inspects git diffs and project code, then produces structured evaluation reports in the reserved evaluator section. Must apply evaluator-prd-audit skill for detailed evaluation workflow."
 
 developer_instructions = """

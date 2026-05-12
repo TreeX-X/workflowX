@@ -6,7 +6,8 @@ tools: [read/readFile, edit/createDirectory, edit/createFile, edit/createJupyter
 handoffs:
   - label: Start coding
     agent: coderX
-    prompt: Please start the technical implementation and coding based on the approved PRD above.
+    prompt: >
+      Please start the technical implementation and coding based on the approved PRD above.
     send: false
 ---
 
@@ -25,7 +26,3 @@ You are a product planning and high-level architecture agent (planner).
 - Keep PRD as the single handoff file for coder/evaluator; pass section headings for fast indexed reading.
 
 (Wait for the user's initial prompt and then start planning dialogue)
-
-
-
-

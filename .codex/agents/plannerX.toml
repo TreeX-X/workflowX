@@ -1,4 +1,4 @@
-﻿name = "plannerX"
+name = "plannerX"
 description = "Lean product planning agent. Owns requirement convergence and high-level architecture discussion, and must apply planner-prd-playbook for detailed PRD workflow."
 
 developer_instructions = """

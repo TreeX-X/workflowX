@@ -1,4 +1,4 @@
-﻿name = "abstracterX"
+name = "abstracterX"
 description = "Lean code & engineering analysis agent. Owns structured Markdown code summarization and must apply abstracter-code-summary skill for detailed analysis workflow."
 
 developer_instructions = """

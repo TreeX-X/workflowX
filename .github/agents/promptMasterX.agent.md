@@ -1,4 +1,4 @@
-﻿---
+---
 name: promptMasterX
 description: Prompt 预处理智能体。接收用户的原始需求文本，按照 prompt-master 技能规范自动识别目标工具并输出优化后的生产级 prompt。作为 orchestrator 的透明预处理层，为 coderX 等下游智能体提供精准无歧义的输入。
 tools: [read/readFile, search/fileSearch, search/listDirectory]

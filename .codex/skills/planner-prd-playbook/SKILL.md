@@ -1,4 +1,4 @@
-﻿---
+---
 name: planner-prd-playbook
 description: Structured PRD planning playbook for planner agents. Use this skill whenever the user is discussing product ideas, requirement scoping, high-level architecture trade-offs, PRD drafting, or asks for Summary/output PRD, even if they only provide rough notes.
 ---
@@ -26,7 +26,7 @@ description: Structured PRD planning playbook for planner agents. Use this skill
 
 ## 3. 上下文索引维护规则
 
-在对话中持续维护"工程文件索引 + 知识索引"，只记录已确认信息：
+在对话中持续维护“工程文件索引 + 知识索引”，只记录已确认信息：
 
 - 文件路径
 - 文件作用
@@ -45,13 +45,13 @@ description: Structured PRD planning playbook for planner agents. Use this skill
 ### 3.1 单文件记忆策略（PRD 作为唯一交付源）
 
 - 允许使用 `mcp/server-memory` 作为对话阶段的中间记忆缓存。
-- 最终交付必须回写到 `[功能模组]-hybrid.md`（其中"功能模组"需根据用户需求自动总结生成），不得依赖外部记忆作为唯一事实来源。
+- 最终交付必须回写到 `[功能模组]-hybrid.md`（其中“功能模组”需根据用户需求自动总结生成），不得依赖外部记忆作为唯一事实来源。
 - coderX/evaluatorX 交接时，默认只传递该 `[功能模组]-hybrid.md` 路径与目标标题，不传递冗余上下文正文。
-- 采用"单一主索引 + 快照引用"：`8.1` 为唯一完整索引，`8.2` 与 `8.3` 仅记录增量与引用，不做全量重复抄录。
+- 采用“单一主索引 + 快照引用”：`8.1` 为唯一完整索引，`8.2` 与 `8.3` 仅记录增量与引用，不做全量重复抄录。
 
 ### 3.2 server-memory 到 PRD 的回写规则
 
-当用户输入 `Summary`、表达"移交/交接/结束规划/开始开发/进入 coding"等意图，或进入可结案状态时，planner 按以下顺序执行：
+当用户输入 `Summary`、表达“移交/交接/结束规划/开始开发/进入 coding”等意图，或进入可结案状态时，planner 按以下顺序执行：
 
 1. 从 `mcp/server-memory` 读取当前会话中已确认事实，并生成结构化知识图谱（节点 + 关系 + 证据来源）。
 2. 清洗内容：仅保留用户明确确认的事实，删除猜测、待确认、冲突项。
@@ -65,8 +65,8 @@ description: Structured PRD planning playbook for planner agents. Use this skill
 
 当用户输入 `Summary`，或出现以下任一结束/移交信号时：
 
-- 用户明确说"移交""交给 coder""转开发""开始实现""结束规划"。
-- 用户要求"输出最终文档""给最终版本""直接生成可交接稿"。
+- 用户明确说“移交”“交给 coder”“转开发”“开始实现”“结束规划”。
+- 用户要求“输出最终文档”“给最终版本”“直接生成可交接稿”。
 - 对话已明确进入开发阶段且用户不再继续补充规划信息。
 
 处理动作如下：

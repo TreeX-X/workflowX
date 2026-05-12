@@ -1,0 +1,281 @@
+﻿{
+  "agents": {
+    "orchestratorX": {
+      "copilot": {
+        "tools": [
+          "vscode/getProjectSetupInfo",
+          "vscode/installExtension",
+          "vscode/memory",
+          "vscode/newWorkspace",
+          "vscode/resolveMemoryFileUri",
+          "vscode/runCommand",
+          "vscode/vscodeAPI",
+          "vscode/extensions",
+          "vscode/askQuestions",
+          "execute/runNotebookCell",
+          "execute/getTerminalOutput",
+          "execute/killTerminal",
+          "execute/sendToTerminal",
+          "execute/runTask",
+          "execute/createAndRunTask",
+          "execute/runInTerminal",
+          "read/getNotebookSummary",
+          "read/problems",
+          "read/readFile",
+          "read/viewImage",
+          "read/readNotebookCellOutput",
+          "read/terminalSelection",
+          "read/terminalLastCommand",
+          "read/getTaskOutput",
+          "agent/runSubagent",
+          "search/changes",
+          "search/codebase",
+          "search/fileSearch",
+          "search/listDirectory",
+          "search/textSearch",
+          "search/searchSubagent",
+          "search/usages",
+          "todo"
+        ]
+      },
+      "claude": {
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit",
+          "Glob",
+          "Grep",
+          "Agent",
+          "TodoWrite",
+          "mcp"
+        ]
+      }
+    },
+    "coderX": {
+      "copilot": {
+        "tools": [
+          "execute/runNotebookCell",
+          "execute/getTerminalOutput",
+          "execute/killTerminal",
+          "execute/sendToTerminal",
+          "execute/runTask",
+          "execute/createAndRunTask",
+          "execute/runInTerminal",
+          "read/getNotebookSummary",
+          "read/problems",
+          "read/readFile",
+          "read/viewImage",
+          "read/readNotebookCellOutput",
+          "read/terminalSelection",
+          "read/terminalLastCommand",
+          "read/getTaskOutput",
+          "agent/runSubagent",
+          "edit/createDirectory",
+          "edit/createFile",
+          "edit/createJupyterNotebook",
+          "edit/editFiles",
+          "edit/editNotebook",
+          "edit/rename",
+          "search/changes",
+          "search/codebase",
+          "search/fileSearch",
+          "search/listDirectory",
+          "search/textSearch",
+          "search/searchSubagent",
+          "search/usages",
+          "todo"
+        ],
+        "handoffs": [
+          {
+            "label": "Evaluate implementation",
+            "agent": "evaluatorX",
+            "prompt": "I have completed the implementation based on product-spec-context.md. Please audit the current code changes against the spec requirements, file index, and knowledge index, then overwrite section 9 (Evaluator Reserved Section) with the latest evaluation report. After the evaluation, hand back to me so I can address the findings.",
+            "send": false
+          }
+        ]
+      },
+      "claude": {
+        "tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit",
+          "Glob",
+          "Grep",
+          "Agent",
+          "TodoWrite",
+          "mcp"
+        ]
+      }
+    },
+    "evaluatorX": {
+      "copilot": {
+        "tools": [
+          "read",
+          "search",
+          "edit",
+          "execute",
+          "todo"
+        ],
+        "handoffs": [
+          {
+            "label": "Continue coding",
+            "agent": "coderX",
+            "prompt": "The evaluation report has been written to section 9 of product-spec-context.md. Please review the issues and suggestions, then continue iterating on the implementation.",
+            "send": false
+          }
+        ]
+      },
+      "claude": {
+        "tools": [
+          "Bash",
+          "Read",
+          "Glob",
+          "Grep",
+          "Edit",
+          "TodoWrite",
+          "mcp"
+        ]
+      }
+    },
+    "evaluatorX_zh": {
+      "copilot": {
+        "tools": [
+          "read",
+          "search",
+          "edit",
+          "execute",
+          "todo"
+        ],
+        "handoffs": [
+          {
+            "label": "Continue coding",
+            "agent": "coderX",
+            "prompt": "The evaluation report has been written to section 9 of product-spec-context.md. Please review the issues and suggestions, then continue iterating on the implementation.",
+            "send": false
+          }
+        ]
+      },
+      "claude": {
+        "tools": [
+          "Bash",
+          "Read",
+          "Glob",
+          "Grep",
+          "Edit",
+          "TodoWrite",
+          "mcp"
+        ]
+      }
+    },
+    "plannerX": {
+      "copilot": {
+        "tools": [
+          "read/readFile",
+          "edit/createDirectory",
+          "edit/createFile",
+          "edit/createJupyterNotebook",
+          "edit/editFiles",
+          "edit/editNotebook",
+          "edit/rename",
+          "search/changes",
+          "search/codebase",
+          "search/fileSearch",
+          "search/listDirectory",
+          "search/textSearch",
+          "search/searchSubagent",
+          "search/usages",
+          "web/fetch",
+          "web/githubRepo"
+        ],
+        "handoffs": [
+          {
+            "label": "Start coding",
+            "agent": "coderX",
+            "prompt": "Please start the technical implementation and coding based on the approved PRD above.",
+            "send": false
+          }
+        ]
+      },
+      "claude": {
+        "tools": [
+          "Read",
+          "Write",
+          "Edit",
+          "Glob",
+          "Grep",
+          "WebFetch",
+          "Agent",
+          "mcp"
+        ]
+      }
+    },
+    "plannerX_zh": {
+      "copilot": {
+        "tools": [
+          "read/readFile",
+          "edit/createDirectory",
+          "edit/createFile",
+          "edit/createJupyterNotebook",
+          "edit/editFiles",
+          "edit/editNotebook",
+          "edit/rename",
+          "search/changes",
+          "search/codebase",
+          "search/fileSearch",
+          "search/listDirectory",
+          "search/textSearch",
+          "search/searchSubagent",
+          "search/usages",
+          "web/fetch",
+          "web/githubRepo"
+        ],
+        "handoffs": [
+          {
+            "label": "Start coding",
+            "agent": "coderX",
+            "prompt": "Please start the technical implementation and coding based on the approved PRD above.",
+            "send": false
+          }
+        ]
+      },
+      "claude": {
+        "tools": [
+          "Read",
+          "Write",
+          "Edit",
+          "Glob",
+          "Grep",
+          "WebFetch",
+          "Agent",
+          "mcp"
+        ]
+      }
+    },
+    "abstracterX": {
+      "copilot": {},
+      "claude": {}
+    },
+    "abstracterX_zh": {
+      "copilot": {},
+      "claude": {}
+    },
+    "promptMasterX": {
+      "copilot": {
+        "tools": [
+          "read/readFile",
+          "search/fileSearch",
+          "search/listDirectory"
+        ]
+      },
+      "claude": {
+        "tools": [
+          "Read",
+          "Glob",
+          "Grep"
+        ]
+      }
+    }
+  }
+}
