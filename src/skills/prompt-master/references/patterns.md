@@ -1,4 +1,4 @@
-# Credit-Killing Patterns Reference
+﻿# Credit-Killing Patterns Reference
 
 37 patterns that waste tokens and cause re-prompts. Read this file when the user pastes a bad prompt and asks you to fix it, or when diagnosing why a prompt is underperforming.
 

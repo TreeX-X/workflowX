@@ -1,4 +1,4 @@
-﻿---
+---
 name: evaluator-prd-audit
 description: >
   Structured PRD-based code audit workflow. Use when evaluating code implementations against Product Requirement Documents.
@@ -9,209 +9,209 @@ description: >
 
 # Evaluator: PRD-Based Code Audit Skill
 
-## 为什么需要这个技能
+## Why This Skill Is Needed
 
-在迭代式开发工作流中，coding 智能体完成代码实现后，需要一个**独立的审核环节**来确保：
-- 代码与 PRD 需求保持对齐，没有遗漏或偏离
-- 代码质量符合工程规范
-- 存在明确的可优化方向供下一轮迭代
+In iterative development workflows, after the coding agent completes code implementation, an **independent audit step** is needed to ensure:
+- Code remains aligned with PRD requirements, with no omissions or deviations
+- Code quality meets engineering standards
+- Clear optimization directions exist for the next iteration round
 
-本技能为 evaluator 智能体提供标准化的审核工作流，确保每次评估结果结构化、可追溯、可交接。
+This skill provides a standardized audit workflow for the evaluator agent, ensuring each evaluation result is structured, traceable, and handoff-ready.
 
-## 触发条件
+## Trigger Conditions
 
-当用户或上游 Agent 要求"审核代码"、"评估实现"、"检查代码与需求一致性"、"运行 evaluator"、"审计"或类似表述时，必须加载本技能。
+When a user or upstream agent requests to "audit code", "evaluate implementation", "check code-requirements alignment", "run evaluator", "review", or similar expressions, this skill must be loaded.
 
-## 核心工作流
+## Core Workflow
 
-### 第一步：加载规格文档
+### Step 1: Load Specification Document
 
-1. 优先读取上游智能体明确交接或用户主动引用的文档（通常为 `[功能模组]-hybrid.md`）；如果没有，则自动在工程目录中检索相应的 hybrid 文档并读取。
-2. 如果既没有主动引用，在上下文中也未检索到相关的混合文档记录，评估智能体（evaluator）允许直接基于现有对话上下文或代码变更继续执行审计，并明确提示当前为“无规格文档评估模式”。
-3. 若成功读取到规范文档，提取以下关键信息：
-   - **需求清单**：功能需求、非功能性需求、业务规则
-   - **验收标准**：每个需求的可验证条件
-   - **工程文件索引**：`8.1` 主索引中的工程文件条目
-   - **知识图谱大纲**：读取 `8.2` 的关联图谱节点大纲/指针。
-4. **图谱细节检索 (MCP)**：根据 `8.2` 拿到的大纲指南，针对本次变更需要关注的核心模块结构，主动调用 `mcp/server-memory` (如 `mcp_memory_open_nodes` 等工具)，去拉取“树叶级”的具体代码逻辑与上下文约束细节。必须将动态检索出的知识实体作为验证代码的规范依据，而不可单凭 Markdown 推理。
-5. 读取 `8.3` 的索引增量与阅读顺序差异。
-6. 读取预留的评估区块 `9.*`，用于覆盖写入本轮评估结果。
-7. **注意**：`10. 🔄 迭代检查点` 区块由 orchestrator 自动管理，evaluatorX 禁止修改此区块。
+1. Prioritize reading documents explicitly handed off by upstream agents or actively referenced by users (typically `[Feature Module]-hybrid.md`); if none, automatically search the project directory for the corresponding hybrid document and read it.
+2. If there is no active reference and no related hybrid document record in context, the evaluator agent is allowed to proceed with the audit directly based on existing conversation context or code changes, explicitly noting that this is a "No Specification Document Evaluation Mode".
+3. If a specification document is successfully read, extract the following key information:
+   - **Requirement List**: Functional requirements, non-functional requirements, business rules
+   - **Acceptance Criteria**: Verifiable conditions for each requirement
+   - **Engineering File Index**: Engineering file entries in the `8.1` main index
+   - **Knowledge Graph Outline**: Read the associated graph node outline/pointers from `8.2`.
+4. **Graph Detail Retrieval (MCP)**: Based on the outline guide obtained from `8.2`, for the core module structures relevant to this change, proactively call `mcp/server-memory` (such as `mcp_memory_open_nodes` and other tools) to retrieve "leaf-level" specific code logic and context constraint details. Dynamically retrieved knowledge entities must serve as verification code specification basis; do not rely solely on Markdown reasoning.
+5. Read the `8.3` incremental index differences and reading order variations.
+6. Read the reserved evaluation section `9.*` for overwriting this round's evaluation results.
+7. **Note**: The `10. Iteration Checkpoints` section is automatically managed by the orchestrator; evaluatorX is prohibited from modifying this section.
 
-### 第二步：获取代码变更与定向解析（总线管道模式）
+### Step 2: Obtain Code Changes & Directional Parsing (Bus Pipeline Mode)
 
-这是评估的核心输入：
+This is the core input for evaluation:
 
-1. **读取上游总线管道负载**：优先读取 coderX 在对话流中输出并交接来的"阶段成果负载"（明确完成了哪些功能、改了哪些文件）。利用这些信息进行**定向缩小审核范围**，而不是盲目全局遍历。
-2. **读取 git diff**：结合上述负载范围，获取当前工作区未提交的相对变更（unstaged + staged）。
-3. 如果 git diff 为空，检索最近一次 commit 的变更。
-4. **搜索上下文文件**：对于 coderX 重点提示引用的模块、接口、类型，搜索工程中相关文件以获得完整上下文。
+1. **Read Upstream Bus Pipeline Payload**: Prioritize reading the "Phase Result Payload" output and handed off by coderX in the conversation flow (clarifying which features were completed, which files were modified). Use this information for **directional narrowing of audit scope** instead of blindly traversing the entire codebase.
+2. **Read git diff**: Combined with the above payload scope, obtain the relative changes in the current working directory (unstaged + staged).
+3. If git diff is empty, retrieve changes from the most recent commit.
+4. **Search Context Files**: For modules, interfaces, and types specifically referenced by coderX, search related files in the project for complete context.
 
-### 第二步补充：评估模式判定（Evaluation Mode Detection）
+### Step 2 Supplement: Evaluation Mode Detection
 
-在正式评估前，必须判定本轮使用的评估模式：
+Before formal evaluation, determine the evaluation mode for this round:
 
-| 模式 | 标识 | 触发条件 | 行为 |
+| Mode | Identifier | Trigger Condition | Behavior |
 |------|------|---------|------|
-| **完整评估** | `full` | 首次评估 / 上轮结果为 `需修复` / 无历史 `9.*` 记录 | 对照全部 PRD 需求 + 全部 AC 逐条评估 |
-| **增量评估** | `incremental` | 上轮评估结果为 `PASS`（即打回修复后的新一轮） | **仅评估本轮 Payload 中声明的已修改文件和功能项**，已通过的 AC 直接沿用上轮结论 |
+| **Full Evaluation** | `full` | First evaluation / previous result was `Needs Fix` / no historical `9.*` records | Evaluate against all PRD requirements + all AC item by item |
+| **Incremental Evaluation** | `incremental` | Previous evaluation result was `PASS` (i.e., new round after fix and resubmit) | **Only evaluate modified files and feature items declared in this round's Payload**; previously passed ACs directly inherit the previous round's conclusion |
 
-**判定规则**：
-- 读取 hybrid 文档 `9.1` 中的上一轮 `evaluation_mode` 和 `9.5` 综合评估结论。
-- 若上轮结论为 `PASS` 且本轮 coderX Payload 中声明的修改范围是局部性的 → `incremental`。
-- 其他所有情况 → `full`。
+**Determination Rules**:
+- Read the previous round's `evaluation_mode` in hybrid document `9.1` and the `9.5` comprehensive evaluation conclusion.
+- If the previous round's conclusion was `PASS` and this round's coderX Payload declares a localized modification scope -> `incremental`.
+- All other cases -> `full`.
 
-**增量模式特殊行为**：
-1. 仅校验 Payload 中 `核心修改清单` 涉及的文件对应的 AC 和需求条目。
-2. 未涉及的需求/AC 直接标注 `✅ 已通过 (沿用)`，不重复审查。
-3. 若增量范围内出现新的 P0 问题，**自动升级为 `full` 模式**重新评估全部需求。
+**Incremental Mode Special Behavior**:
+1. Only verify the AC and requirement entries corresponding to files in the `Core Modification List` of the Payload.
+2. Uninvolved requirements/ACs are directly marked as `Passed (inherited)` without redundant review.
+3. If new P0 issues appear within the incremental scope, **automatically upgrade to `full` mode** and re-evaluate all requirements.
 
-### 第三步：逐条需求评估
+### Step 3: Requirement-by-Requirement Evaluation
 
-对照 PRD 中的每一条需求，评估代码实现状态：
+Compare against each requirement in the PRD and evaluate code implementation status:
 
-| 评估维度 | 说明 |
+| Evaluation Dimension | Description |
 |---------|------|
-| ✅ 已实现 | 需求已被完整且正确地实现 |
-| ⚠️ 部分实现 | 需求有实现但存在遗漏或不完整 |
-| ❌ 未实现 | 需求完全没有被实现 |
-| 🔄 不可评估 | 需求在当前变更范围内无法评估（需结合其他部分） |
+| Fully Implemented | Requirement has been completely and correctly implemented |
+| Partially Implemented | Requirement has been implemented but with omissions or incompleteness |
+| Not Implemented | Requirement has not been implemented at all |
+| Unevaluable | Requirement cannot be evaluated within the current change scope (requires combining other parts) |
 
-对于每一条需求，记录：
-- 对应实现代码的文件路径和关键代码段
-- 实现与需求之间的一致性判断
-- 与需求偏离的具体描述（如果有）
+For each requirement, record:
+- File path and key code segments of the corresponding implementation
+- Consistency judgment between implementation and requirement
+- Specific description of deviation from requirement (if any)
 
-### 第三步补充：逐条验收标准（AC）评估（强制）
+### Step 3 Supplement: Acceptance Criteria (AC) Evaluation (Mandatory)
 
-除需求级判断外，必须对 `4` 章节中的每条验收标准（Acceptance Criteria）逐项评估：
+In addition to requirement-level judgment, each acceptance criterion in the `4` section must be evaluated item by item:
 
-| AC 评估维度 | 说明 |
+| AC Evaluation Dimension | Description |
 |------------|------|
-| ✅ 通过 | 代码与行为可直接证明满足该 AC |
-| ⚠️ 部分通过 | 有实现但不完整，存在边界或条件遗漏 |
-| ❌ 未通过 | 当前实现无法满足该 AC |
-| 🔄 不可评估 | 缺少运行条件、外部依赖或当前变更范围不足 |
+| Pass | Code and behavior can directly prove satisfaction of the AC |
+| Partial Pass | Implementation exists but is incomplete, with boundary or conditional omissions |
+| Fail | Current implementation cannot satisfy the AC |
+| Unevaluable | Missing runtime conditions, external dependencies, or insufficient current change scope |
 
-每条 AC 必须记录：
-- AC 原文或唯一标识
-- 对应实现位置（文件路径与行号）
-- 判定状态（✅/⚠️/❌/🔄）
-- 判定依据与缺口说明
+Each AC must record:
+- Original AC text or unique identifier
+- Corresponding implementation location (file path and line number)
+- Determination status
+- Determination basis and gap description
 
-若出现 `⚠️/❌`，必须在 `9.3` 问题清单和 `9.4` 优化建议中给出可执行修改意见。
+If `Partial Pass / Fail` appears, actionable modification suggestions must be provided in the `9.3` issue list and `9.4` optimization suggestions.
 
-### 第四步：代码质量审查
+### Step 4: Code Quality Review
 
-除需求对齐外，还需要审查通用代码质量维度：
+In addition to requirement alignment, review general code quality dimensions:
 
-1. **正确性**：是否存在明显的逻辑错误、边界条件遗漏、空指针/空值风险
-2. **健壮性**：错误处理是否完善，输入校验是否充分
-3. **可维护性**：命名、注释、模块划分是否清晰
-4. **性能隐患**：是否存在明显的性能问题（如不必要的循环、重复查询等）
-5. **安全性**：是否存在注入风险、敏感信息泄露等（根据项目类型判断）
+1. **Correctness**: Whether obvious logic errors, boundary condition omissions, null pointer/null value risks exist
+2. **Robustness**: Whether error handling is complete, input validation is sufficient
+3. **Maintainability**: Whether naming, comments, and module division are clear
+4. **Performance Risks**: Whether obvious performance issues exist (e.g., unnecessary loops, repeated queries, etc.)
+5. **Security**: Whether injection risks, sensitive information leaks, etc. exist (judged based on project type)
 
-### 第五步：生成评估报告
+### Step 5: Generate Evaluation Report
 
-将评估结果生成为结构化 Markdown，并**覆盖写入 `9. 评估报告（Evaluator Reserved Section）` 区块**。
+Generate the evaluation results as structured Markdown and **overwrite the `9. Evaluation Report (Evaluator Reserved Section)` block**.
 
-> 不得在文档底部追加多轮报告；每轮都覆盖 `9.*` 的内容。
+> Do not append multiple rounds of reports at the bottom of the document; each round overwrites the `9.*` content.
 
 ```markdown
 ---
 
-## 9. 🧪 评估报告（Evaluator Reserved Section）
+## 9. Evaluation Report (Evaluator Reserved Section)
 
-### 9.1 最近一次评估元信息
-- 评估时间: {timestamp}
-- 评估范围: git diff (unstaged + staged)
-- 评估人/Agent: evaluatorX
+### 9.1 Most Recent Evaluation Metadata
+- Evaluation Time: {timestamp}
+- Evaluation Scope: git diff (unstaged + staged)
+- Evaluator/Agent: evaluatorX
 - evaluation_mode: {full | incremental}
-- 关联代码范围: {file_list}
+- Related Code Scope: {file_list}
 
-### 9.2 需求符合度概览
+### 9.2 Requirement Compliance Overview
 
-| 需求 | 类型 | 状态 | 对应代码 | 说明 |
+| Requirement | Type | Status | Corresponding Code | Description |
 |------|------|------|---------|------|
-| {需求名} | {功能/非功能/规则} | ✅/⚠️/❌/🔄 | {文件:行号} | {说明} |
+| {requirement name} | {functional/non-functional/rule} | Status | {file:line} | {description} |
 
-- ✅ 完全实现: {count} / {total}
-- ⚠️ 部分实现: {count}
-- ❌ 未实现: {count}
-- 🔄 不可评估: {count}
+- Fully Implemented: {count} / {total}
+- Partially Implemented: {count}
+- Not Implemented: {count}
+- Unevaluable: {count}
 
-### 9.2.1 验收标准（AC）符合度
+### 9.2.1 Acceptance Criteria (AC) Compliance
 
-| AC | 状态 | 对应代码 | 依据/差距 | 修改建议 |
+| AC | Status | Corresponding Code | Basis/Gap | Modification Suggestion |
 |----|------|---------|----------|---------|
-| {AC 标识或原文摘要} | ✅/⚠️/❌/🔄 | {文件:行号} | {证据或差距说明} | {可执行建议；✅可填 N/A} |
+| {AC identifier or summary} | Status | {file:line} | {evidence or gap description} | {actionable suggestion; N/A if Pass} |
 
-- AC 总数: {total}
-- ✅ 通过: {count}
-- ⚠️ 部分通过: {count}
-- ❌ 未通过: {count}
-- 🔄 不可评估: {count}
+- AC Total: {total}
+- Pass: {count}
+- Partial Pass: {count}
+- Fail: {count}
+- Unevaluable: {count}
 
-### 9.3 代码问题清单
+### 9.3 Code Issue List
 
-| # | 问题类型 | 严重程度 | 位置 | 描述 |
+| # | Issue Type | Severity | Location | Description |
 |---|---------|---------|------|------|
-| 1 | {需求偏离/逻辑缺陷/规范问题} | 🔴/🟡/🟢 | {文件:行号} | {问题描述} |
+| 1 | {requirement deviation/logic defect/spec issue} | Severity | {file:line} | {issue description} |
 
-### 9.4 优化建议
+### 9.4 Optimization Suggestions
 
-| # | 建议 | 预期收益 | 建议优先级 |
+| # | Suggestion | Expected Benefit | Suggested Priority |
 |---|------|---------|-----------|
-| 1 | {具体建议} | {收益描述} | P0/P1/P2 |
+| 1 | {specific suggestion} | {benefit description} | P0/P1/P2 |
 
-### 9.5 综合评估结论
+### 9.5 Comprehensive Evaluation Conclusion
 
-{一段总结性描述，说明当前代码的整体实现质量、主要差距、以及推荐下一步行动}
+{A summary paragraph describing the overall implementation quality of the current code, main gaps, and recommended next actions}
 ```
 
-### 第六步：必要时的补充搜索
+### Step 6: Supplementary Search When Needed
 
-如果在评估过程中发现以下情况，应主动搜索工程其他文件：
-- 变更代码中引用了未在变更中的函数/类/模块
-- 规格需求涉及现有系统的集成点
-- 疑似存在重复实现或与现有功能冲突
+If the following situations are discovered during evaluation, proactively search other project files:
+- Changed code references functions/classes/modules not included in the changes
+- Specification requirements involve integration points with existing systems
+- Suspected duplicate implementation or conflicts with existing functionality
 
-并优先参考 `8.1` 的文件索引与知识索引进行定向阅读，必要时结合 `8.3` 的增量差异定位本轮重点。
+Prioritize directed reading based on the `8.1` file index and knowledge index; when necessary, combine with `8.3` incremental differences to locate this round's focus.
 
-使用 semantic_search 或 grep_search 定位相关代码。
+Use semantic_search or grep_search to locate related code.
 
-## 输出行为约束
+## Output Behavior Constraints
 
-1. **始终覆盖写**：每次评估结果都覆盖 `9.*` 评估区块，不做增量追加。
-2. **只评估可见事实**：不从代码中过度推断需求之外的内容；不确定时标注「待确认」。
-3. **评估需可操作**：每个问题和建议都必须具体到文件路径和行号，让 coding 智能体能直接定位修改。
-4. **区分严重程度**：
-   - 🔴 P0 — 阻塞性：需求未实现或实现错误，必须修复
-   - 🟡 P1 — 改进项：实现基本正确但有优化空间
-   - 🟢 P2 — 建议项：风格、命名、注释等非功能性建议
-5. **无需求不评估**：如果规格文档中无该需求的评估标准，标注「不可评估」而非臆测。
-6. **索引优先**：评估前先读 `8.1` 主索引与知识条目；若存在 `8.3` 增量，再按差异优先级补充阅读。
-7. **AC 必评**：只要规格文档定义了验收标准，必须输出 `9.2.1` 的逐条 AC 评估与修改建议；不得只给需求级摘要。
+1. **Always Overwrite**: Each evaluation result overwrites the `9.*` evaluation section; no incremental appending.
+2. **Evaluate Only Visible Facts**: Do not over-infer beyond what the code and specifications show; mark as "Pending Confirmation" when uncertain.
+3. **Evaluations Must Be Actionable**: Every issue and suggestion must specify the file path and line number, enabling the coding agent to locate modifications directly.
+4. **Distinguish Severity**:
+   - P0 Red -- Blocking: Requirement not implemented or implementation incorrect, must be fixed
+   - P1 Yellow -- Improvement: Implementation is basically correct but has optimization space
+   - P2 Green -- Suggestion: Style, naming, comments, and other non-functional suggestions
+5. **No Requirement, No Evaluation**: If the specification document has no evaluation criteria for a requirement, mark as "Unevaluable" rather than speculating.
+6. **Index First**: Read the `8.1` main index and knowledge entries before evaluation; if `8.3` increments exist, supplement reading by difference priority.
+7. **AC Must Be Evaluated**: As long as the specification document defines acceptance criteria, the `9.2.1` item-by-item AC evaluation and modification suggestions must be output; not just requirement-level summaries.
 
-## 与上下游协作（总线管道输出）
+## Upstream/Downstream Collaboration (Bus Pipeline Output)
 
-在将结构化的详细评估报告覆盖写入 hybrid 文档的 `9` 区块后，为了形成高效的高频迭代闭环，**在将控制权交还 coderX 之前，必须在当前的对话流中直接输出一份"评估总结总线负载 (Pipeline Payload)"** 给对方。
+After overwriting the structured detailed evaluation report into the `9` section of the hybrid document, to form an efficient high-frequency iteration loop, **before returning control to coderX, a "Evaluation Summary Bus Payload (Pipeline Payload)" must be directly output in the current conversation flow** for the downstream agent.
 
-> ⚠️ **格式强制要求**：orchestrator 会对本 Payload 进行结构化校验，校验不通过将被打回重写。请严格按照以下必填字段输出。
+> **Format Enforcement**: The orchestrator will perform structured validation on this Payload; failure will result in rejection and rewrite. Please strictly output according to the following required fields.
 
-负载内容格式如下：
+Payload content format:
 
 ```markdown
-### 📦 Bus Pipeline Payload: Evaluation Summary
-- **核心审核范围**: [本次校验对齐的主功能及代码片段]
-- **重点漏洞/驳回项**:
-  - 🔴 [P0 问题摘要 — 文件路径:问题描述]
-  - 🟡 [P1 问题摘要 — 文件路径:问题描述]
+### Bus Pipeline Payload: Evaluation Summary
+- **Core Audit Scope**: [Main features and code segments verified in this round]
+- **Key Vulnerabilities/Rejection Items**:
+  - P0 [issue summary -- file path:issue description]
+  - P1 [issue summary -- file path:issue description]
   - ...
-- **评估结果**: [PASS | 需修复]
-- **下一步行动建议**: [精确指引 coderX 第一步从哪个文件的哪段逻辑着手]
-- **关联 Hybrid 文档**: [hybrid 文档路径]
-- **详细报告位置**: hybrid 文档 `9.*` 区块（已覆盖写入）
+- **Evaluation Result**: [PASS | Needs Fix]
+- **Recommended Next Action**: [Precisely guide coderX on which file and which logic to start with]
+- **Associated Hybrid Document**: [hybrid document path]
+- **Detailed Report Location**: hybrid document `9.*` section (overwritten)
 ```
 
-通过此总线负载，下游智能体无需每次消耗大量 Token 深度咀嚼全量考核表格即可快速进入修补状态。
+Through this bus payload, the downstream agent can quickly enter repair state without consuming large amounts of tokens to deeply digest the full evaluation table each time.

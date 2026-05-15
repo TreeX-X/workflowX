@@ -1,103 +1,103 @@
-# 📘 混合文档 (Hybrid Docs) - [功能模组]
+# Hybrid Docs - [Feature Module]
 
-**文件名**: [功能模组]-hybrid.md
+**File Name**: [Feature Module]-hybrid.md
 
-**文档状态**: Draft
-**更新日期**: [当前日期]
-**作者**: [Tree]
-**版本**: v1.0
-
----
-
-> **🔴 静态区 (Static Context) 🔴**
-> 以下配置在初次确立后极少发生变更。将其置于文件头部，能够最大化利用大模型底层的 Prompt Caching (Token 缓存) 机制，节约大量重读成本。
-
-## 1. 🎯 项目概述 (Overview)
-- **项目目标**：[填入讨论确定的目标]
-- **核心价值**：[例如：提高效率、降低成本、提供某种不可替代的体验]
-
-## 2. 👥 目标用户 (Target Audience)
-- **Persona 1**: [例如：技术博主 - 需要极简的配置，一键生成。]
-- **Persona 2**: [如果有，填写其他用户画像]
-
-## 3. 🚧 边界与范围 (Scope & Non-Goals)
-### 3.1 明确在范围内 (In-Scope)
-- 按照工程的数据结构和机制进行开发，注意将代码正确添加到工程中
-- 生成的内容符合机制逻辑
-- [填入讨论中确认的其他核心范围]
-
-### 3.2 明确在范围外/非目标 (Out-of-Scope / Non-Goals)
-- **非目标**：不要过多的去侵入已有的工程文件，除非是必要的
-- [填入讨论中确认的不做的事项]
-
-## 4. 🛡️ 非功能性需求 (Non-Functional Requirements)
-- **注释**：生成代码需要在合理的地方添加中文注释，其格式为"/*-- 注释内容 --*/"
-- **代码质量**：生成代码 必须简洁，可读性强
-- **其他要求**：[如性能、兼容性等要求]
-
-## 5. 📈 成功标准 (Success Metrics)
-- 由内部人员评估，功能是否可用
-- [其他讨论中确认的成功指标]
-
-## 6. ✅ 完成的定义 (Definition of Done - DoD)
-- [ ] 所有代码必须通过 Linter 静态检查，没有 Warn 和 Error。
-- [ ] 没有任何 `TODO` 或 `FIXME` 残留在核心逻辑代码中。
-- [ ] 若启用了 `mcp/server-memory`，对应会话记忆已被序列化回写到 `8.2 Memory Snapshot`。
-- [ ] 已预留 `9. 评估报告（Evaluator）` 区块供评估智能体覆盖写入。
-- [ ] [其他工程或业务层面的完成标准]
+**Document Status**: Draft
+**Update Date**: [Current Date]
+**Author**: [Tree]
+**Version**: v1.0
 
 ---
 
-> **🟡 缓变增量区 (Incremental Section) 🟡**
-> 包含核心功能验收标准与工程索引。在迭代开发中可能会被少量增改。
+> **Static Context (Static Section)**
+> The following configuration rarely changes after initial establishment. Placing it at the top of the file maximizes the utilization of the LLM underlying Prompt Caching (Token caching) mechanism, saving substantial re-read costs.
 
-## 7. ⚙️ 核心功能与验收标准 (Features & Acceptance Criteria)
-### 功能 1：[功能名称]
-- **描述**：[高层业务逻辑描述]
-- **实现要求**：[高层技术要求、模块边界约束]
-- **验收标准 (Acceptance Criteria)**：
-  - [ ] [标准 1]
-  - [ ] [标准 2]
+## 1. Project Overview (Overview)
+- **Project Goal**: [Fill in the goal determined through discussion]
+- **Core Value**: [e.g., improve efficiency, reduce costs, provide a unique experience]
 
-*(根据记录，依次列出所有确认的功能...)*
+## 2. Target Audience (Target Audience)
+- **Persona 1**: [e.g., Tech Blogger - needs minimal configuration, one-click generation.]
+- **Persona 2**: [If applicable, fill in other user personas]
 
-## 8. 📚 工程与知识索引附录 (Context Appendix)
-### 8.1 工程文件索引与知识索引（主索引）
-- **文件路径**：[] | **文件作用**：[] | **关联原因**：[]
-- **知识条目**：[] | **知识摘要**：[] | **优先级**：[]
+## 3. Boundaries & Scope (Scope & Non-Goals)
+### 3.1 Clearly In-Scope
+- Develop according to the project's data structures and mechanisms; ensure code is correctly added to the project
+- Generated content conforms to mechanism logic
+- [Fill in other core scopes confirmed during discussion]
 
-### 8.2 Memory Snapshot（仅存放图谱索引节点概要）
-> **注意**：Markdown内仅保留知识节点的“树干（高阶骨架/大纲）”。叶子节点（具体的代码逻辑关系、上下文约束详细内容）全部存留于 `mcp/server-memory` 内。下方仅记录节点ID即其简要名称。
-- **关联 Nodes 列表 (Pointer only)**: [填入相关的节点实体名称/ID]
-- **关联 Relation 大纲**: [填入核心节点间的拓扑关系大体方向]
+### 3.2 Clearly Out-of-Scope / Non-Goals
+- **Non-Goal**: Avoid excessive intrusion into existing project files unless necessary
+- [Fill in items confirmed as out-of-scope during discussion]
 
-### 8.3 需求相关索引增量引用
-- [详见技能规范，仅记录增量差异]
+## 4. Non-Functional Requirements (Non-Functional Requirements)
+- **Comments**: Generated code needs Chinese comments added in reasonable places, formatted as "/*-- comment content --*/"
+- **Code Quality**: Generated code must be concise and highly readable
+- **Other Requirements**: [e.g., performance, compatibility requirements]
+
+## 5. Success Metrics (Success Metrics)
+- Evaluated by internal personnel on whether functionality is usable
+- [Other success metrics confirmed during discussion]
+
+## 6. Definition of Done (DoD)
+- [ ] All code must pass Linter static checks with no warnings or errors.
+- [ ] No `TODO` or `FIXME` remains in core logic code.
+- [ ] If `mcp/server-memory` is enabled, corresponding session memory has been serialized and written back to `8.2 Memory Snapshot`.
+- [ ] The `9. Evaluation Report (Evaluator)` section has been reserved for the evaluation agent to overwrite.
+- [ ] [Other engineering or business-level completion criteria]
 
 ---
 
-> **🟢 高频动态区 (Volatile Section) 🟢**
-> 每轮迭代都会由子智能体覆盖重写。将其置于文件最末尾，以防其频繁变动导致上方庞大静态文本的缓存 Token 命中失效。
+> **Incremental Section (Slow-Changing Incremental Section)**
+> Contains core feature acceptance criteria and engineering index. May be slightly modified during iterative development.
 
-## 9. 🧪 评估报告（Evaluator Reserved Section）
-### 9.1 最近一次评估元信息
-- **评估人/Agent**: [evaluatorX]
+## 7. Core Features & Acceptance Criteria (Features & Acceptance Criteria)
+### Feature 1: [Feature Name]
+- **Description**: [High-level business logic description]
+- **Implementation Requirements**: [High-level technical requirements, module boundary constraints]
+- **Acceptance Criteria (AC)**:
+  - [ ] [Criterion 1]
+  - [ ] [Criterion 2]
+
+*(Based on records, list all confirmed features sequentially...)*
+
+## 8. Engineering & Knowledge Index Appendix (Context Appendix)
+### 8.1 Engineering File Index & Knowledge Index (Main Index)
+- **File Path**: [] | **File Purpose**: [] | **Association Reason**: []
+- **Knowledge Entry**: [] | **Knowledge Summary**: [] | **Priority**: []
+
+### 8.2 Memory Snapshot (Only Store Graph Index Node Summaries)
+> **Note**: Markdown only retains the "trunk" (high-level skeleton/outline) of knowledge nodes. Leaf nodes (specific code logic relationships, detailed context constraints) are entirely stored in `mcp/server-memory`. Below only records node IDs and their brief names.
+- **Associated Nodes List (Pointer only)**: [Fill in associated node entity names/IDs]
+- **Associated Relation Outline**: [Fill in the general direction of topological relationships between core nodes]
+
+### 8.3 Requirement-Related Incremental Index References
+- [Refer to skill specification; only record incremental differences]
+
+---
+
+> **Dynamic Section (High-Frequency Volatile Section)**
+> Overwritten by sub-agents every iteration round. Placed at the very end of the file to prevent its frequent changes from invalidating the cached Tokens of the large static text above.
+
+## 9. Evaluation Report (Evaluator Reserved Section)
+### 9.1 Most Recent Evaluation Metadata
+- **Evaluator/Agent**: [evaluatorX]
 - **evaluation_mode**: [full | incremental]
-### 9.2 需求符合度概览
-*(表格)*
-### 9.3 代码问题清单
-*(表格)*
-### 9.4 优化建议
-*(表格)*
-### 9.5 综合评估结论
+### 9.2 Requirement Compliance Overview
+*(Table)*
+### 9.3 Code Issue List
+*(Table)*
+### 9.4 Optimization Suggestions
+*(Table)*
+### 9.5 Comprehensive Evaluation Conclusion
 []
 
-## 10. 🔄 迭代检查点（Incremental Checkpoints）
-> **注意**：此区块由 orchestrator 自动管理，记录每次关键迭代的可回溯检查点。子智能体不得手动修改本区域内容。
+## 10. Iteration Checkpoints (Incremental Checkpoints)
+> **Note**: This section is automatically managed by the orchestrator, recording traceable checkpoints at each key iteration. Sub-agents must not manually modify the content of this area.
 
-*(检查点记录示例)*
-<!-- - **#CP-1** | **时间**: 2025-01-01T10:00:00Z | **阶段**: coder实现完成 | **触发**: 自动
-  - **已完成功能**: [登录模块 - 表单验证]
-  - **核心修改文件**: [src/auth/login.ts, src/utils/validator.ts]
-  - **Git 状态**: a1b2c3d (commit hash) 或 unstaged
-  - **评估结果**: 未审核 -->
+*(Checkpoint record example)*
+<!-- - **#CP-1** | **Time**: 2025-01-01T10:00:00Z | **Phase**: coder implementation complete | **Trigger**: auto
+  - **Completed Features**: [Login Module - Form Validation]
+  - **Core Modified Files**: [src/auth/login.ts, src/utils/validator.ts]
+  - **Git Status**: a1b2c3d (commit hash) or unstaged
+  - **Evaluation Result**: Not Audited -->

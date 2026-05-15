@@ -5,76 +5,76 @@ description: Code & engineering analysis skill for abstracter agents. Use this s
 
 # Abstracter Code Summary Playbook
 
-将本技能作为 abstracter 智能体的代码分析执行规范。
+Use this skill as the code analysis execution specification for the abstracter agent.
 
-## 1. 目标
+## 1. Objectives
 
-- 快速理解工程结构、核心逻辑与模块关系。
-- 识别关键实现点、数据流/调用链、配置与构建方式。
-- 用清晰、可复用的 Markdown 输出总结结果，帮助用户阅读、评审与决策。
+- Quickly understand engineering structure, core logic, and module relationships.
+- Identify key implementation points, data flows/call chains, configuration, and build methods.
+- Summarize results in clear, reusable Markdown output to help users read, review, and make decisions.
 
-## 2. 输入类型
+## 2. Input Types
 
-- 单文件或多文件代码片段
-- 指定目录/模块/子系统
-- 完整工程仓库
-- 用户附加关注点（如：架构、性能、风险、可维护性、测试覆盖、改进建议）
+- Single-file or multi-file code snippets
+- Specified directories/modules/subsystems
+- Complete engineering repositories
+- Additional user concerns (e.g., architecture, performance, risks, maintainability, test coverage, improvement suggestions)
 
-## 3. 工作方式
+## 3. Working Method
 
-1. **深度思考与梳理**：对于大型工程片段或复杂业务逻辑，建议使用 `mcp/server-sequential-thinking` 工具进行多步递进式的代码读取验证和逻辑推演总结，以确保不出错。
-2. 先提取上下文：项目语言、目录结构、入口点、核心依赖与运行方式。
-3. 再聚焦主线：核心模块职责、关键函数/类、调用关系与数据流。
-4. 补充质量视角：异常处理、边界条件、潜在风险、技术债与可优化点。
-5. 最后给出结论：总结、优先级建议与后续行动项。
+1. **Deep Thinking & Analysis**: For large engineering excerpts or complex business logic, it is recommended to use the `mcp/server-sequential-thinking` tool for multi-step progressive code reading, verification, and logical reasoning summaries to ensure accuracy.
+2. First extract context: project language, directory structure, entry points, core dependencies, and runtime methods.
+3. Then focus on the main thread: core module responsibilities, key functions/classes, call relationships, and data flows.
+4. Supplement with quality perspectives: exception handling, boundary conditions, potential risks, technical debt, and optimizable points.
+5. Finally provide conclusions: summary, priority recommendations, and next action items.
 
-## 4. 输出要求
+## 4. Output Requirements
 
-- 始终输出结构化 Markdown。
-- 适度使用表格展示模块职责、风险分级或改进优先级。
-- 对重要结论给出「依据来源」（文件路径、函数名、类名或配置项）。
-- 语言简洁、信息密度高，避免空泛描述。
+- Always output structured Markdown.
+- Use tables moderately to display module responsibilities, risk grading, or improvement priorities.
+- Provide "source references" (file paths, function names, class names, or configuration items) for important conclusions.
+- Keep language concise with high information density; avoid vague descriptions.
 
-### 输出模板（必须遵循至少包含以下章节）
+### Output Template (Must follow and include at least the following sections)
 
 ~~~markdown
-# 总览
-- 项目目标：
-- 技术栈：
-- 当前总结范围：
+# Overview
+- Project Goal:
+- Tech Stack:
+- Current Summary Scope:
 
-## 工程结构与模块职责
-| 模块/目录 | 主要职责 | 关键文件 |
+## Engineering Structure & Module Responsibilities
+| Module/Directory | Primary Responsibility | Key Files |
 |---|---|---|
 |  |  |  |
 
-## 核心实现与工作流程
+## Core Implementation & Workflow
 1. ...
 2. ...
 
-## 关键代码解读
-- `path/to/file`：说明
-- `ClassOrFunction`：说明
+## Key Code Interpretation
+- `path/to/file`: Description
+- `ClassOrFunction`: Description
 
-## 风险与问题
-| 风险项 | 影响 | 证据 | 优先级 |
+## Risks & Issues
+| Risk Item | Impact | Evidence | Priority |
 |---|---|---|---|
-|  |  |  | 高/中/低 |
+|  |  |  | High/Medium/Low |
 
-## 优化建议
-1. 建议：
-   - 预期收益：
-   - 改动成本：
-   - 适用范围：
+## Optimization Suggestions
+1. Suggestion:
+   - Expected Benefit:
+   - Change Cost:
+   - Applicable Scope:
 
-## 结论与下一步
-- 结论：
-- 建议优先执行：
+## Conclusion & Next Steps
+- Conclusion:
+- Recommended Priority Actions:
 ~~~
 
-## 5. 行为约束
+## 5. Behavioral Constraints
 
-- 不臆测未出现的信息；不确定时明确标注「待确认」。
-- 优先基于代码与配置事实，避免脱离上下文的通用建议。
-- 涉及多种可行方案时，给出利弊对比与推荐方案。
-- 若输入范围过大，先给分层摘要（全局 → 模块 → 关键点），再展开细节。
+- Do not speculate on information that has not appeared; explicitly mark as "Pending Confirmation" when uncertain.
+- Prioritize code and configuration facts; avoid generic suggestions detached from context.
+- When multiple viable approaches exist, provide pros/cons comparison and recommended approach.
+- If the input scope is too large, provide a layered summary (global -> module -> key points) before expanding into details.

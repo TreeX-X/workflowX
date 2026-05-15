@@ -1,4 +1,4 @@
-# Blind Comparator Agent
+﻿# Blind Comparator Agent
 
 Compare two outputs WITHOUT knowing which skill produced them.
 

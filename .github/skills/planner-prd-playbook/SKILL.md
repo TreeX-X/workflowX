@@ -1,97 +1,97 @@
-﻿---
+---
 name: planner-prd-playbook
 description: Structured PRD planning playbook for planner agents. Use this skill whenever the user is discussing product ideas, requirement scoping, high-level architecture trade-offs, PRD drafting, or asks for Summary/output PRD, even if they only provide rough notes.
 ---
 
 # Planner PRD Playbook
 
-将本技能作为 planner 智能体的对话执行规范与 PRD 生成规范。
+Use this skill as the conversational execution specification and PRD generation specification for the planner agent.
 
-## 1. 目标与职责边界
+## 1. Objectives & Responsibility Boundaries
 
-- 用高质量对话把用户的零散想法收敛为高层 PRD。
-- 保持高层设计视角，不提前锁定底层实现细节。
-- 面对需求缺口时，提供 2-3 个可选方案并解释取舍。
-- 仅记录用户明确提出或确认的信息，不得自行脑补业务规则。
+- Use high-quality conversation to converge the user's scattered ideas into a high-level PRD.
+- Maintain a high-level design perspective; do not prematurely lock down low-level implementation details.
+- When facing requirement gaps, provide 2-3 alternative options and explain trade-offs.
+- Only record information explicitly stated or confirmed by the user; do not independently speculate on business rules.
 
-## 2. 每轮对话固定输出结构
+## 2. Fixed Output Structure per Turn
 
-每一轮都使用以下结构推进，只处理当前最关键议题：
+Each turn uses the following structure to advance, only addressing the most critical topic at the moment:
 
-- 💡 认知同步：1-2 句复述用户最新表达，确认理解一致。
-- 📝 已决记录：列出当前已确认的功能点或高层技术方向。
-- 📚 上下文索引：增量更新文件索引与知识索引。
-- 🛠️ 建设性提议（可选）：给出专业建议或 2-3 个选项。
-- ❓ 下一步探讨：只提 1 个核心问题（最多 2 个）。
+- Cognitive Sync: 1-2 sentences restating the user's latest expression, confirming shared understanding.
+- Confirmed Records: List currently confirmed functional points or high-level technical directions.
+- Context Index: Incrementally update file index and knowledge index.
+- Constructive Proposal (optional): Provide professional advice or 2-3 options.
+- Next Step Discussion: Ask only 1 core question (maximum 2).
 
-## 3. 上下文索引维护规则
+## 3. Context Index Maintenance Rules
 
-在对话中持续维护“工程文件索引 + 知识索引”，只记录已确认信息：
+Continuously maintain "Engineering File Index + Knowledge Index" during conversation, recording only confirmed information:
 
-- 文件路径
-- 文件作用
-- 关联原因
-- 知识条目
-- 知识摘要
-- 优先级
-- 推荐阅读顺序
+- File path
+- File purpose
+- Association reason
+- Knowledge entry
+- Knowledge summary
+- Priority
+- Recommended reading order
 
-要求：
+Requirements:
 
-- 只收录会影响实现判断的内容。
-- 索引内容保持简洁、具体、可直接用于后续 coding 智能体快速进入上下文。
-- 未确认的信息不得写入索引。
+- Only include content that affects implementation judgment.
+- Index content remains concise, specific, and directly usable by subsequent coding agents for quick context acquisition.
+- Unconfirmed information must not be written to the index.
 
-### 3.1 单文件记忆策略（PRD 作为唯一交付源）
+### 3.1 Single-File Memory Strategy (PRD as Sole Delivery Source)
 
-- 允许使用 `mcp/server-memory` 作为对话阶段的中间记忆缓存。
-- 最终交付必须回写到 `[功能模组]-hybrid.md`（其中“功能模组”需根据用户需求自动总结生成），不得依赖外部记忆作为唯一事实来源。
-- coderX/evaluatorX 交接时，默认只传递该 `[功能模组]-hybrid.md` 路径与目标标题，不传递冗余上下文正文。
-- 采用“单一主索引 + 快照引用”：`8.1` 为唯一完整索引，`8.2` 与 `8.3` 仅记录增量与引用，不做全量重复抄录。
+- Allow using `mcp/server-memory` as intermediate memory cache during conversation phase.
+- Final delivery must be written back to `[Feature Module]-hybrid.md` (where "Feature Module" is auto-generated from user requirement summary); must not depend on external memory as sole source of truth.
+- When handing off coderX/evaluatorX, only pass the `[Feature Module]-hybrid.md` path and target title by default; do not pass redundant context body.
+- Adopt "Single Main Index + Snapshot Reference": `8.1` is the sole complete index; `8.2` and `8.3` only record increments and references, without full redundant transcription.
 
-### 3.2 server-memory 到 PRD 的回写规则
+### 3.2 server-memory to PRD Writeback Rules
 
-当用户输入 `Summary`、表达“移交/交接/结束规划/开始开发/进入 coding”等意图，或进入可结案状态时，planner 按以下顺序执行：
+When the user inputs `Summary`, expresses "handoff/transfer/finish planning/start development/enter coding" intents, or enters a closable state, the planner executes the following in order:
 
-1. 从 `mcp/server-memory` 读取当前会话中已确认事实，并生成结构化知识图谱（节点 + 关系 + 证据来源）。
-2. 清洗内容：仅保留用户明确确认的事实，删除猜测、待确认、冲突项。
-3. 将清洗后的知识图谱序列化写入文档固定区块（见模板中的 `8.2 Memory Snapshot`）。
-4. 若已存在旧快照，仅做覆盖更新并保留时间戳，不新增重复章节。
-5. 回写后再次检查：`8.1` 为唯一主索引；`8.3` 仅保留差异与引用信息，不复制 `8.1` 全量内容。
+1. Read confirmed facts from `mcp/server-memory` for the current session and generate a structured knowledge graph (nodes + relationships + evidence sources).
+2. Clean content: Only retain facts explicitly confirmed by the user; delete speculation, pending confirmation, and conflicting items.
+3. Serialize the cleaned knowledge graph and write it to the fixed document section (see `8.2 Memory Snapshot` in the template).
+4. If an old snapshot already exists, only overwrite and update with timestamp preserved; do not add duplicate sections.
+5. After writeback, re-check: `8.1` is the sole main index; `8.3` only retains differences and reference information, without copying full content from `8.1`.
 
-> **强制要求**：在执行 handoff 或结束规划前，必须先调用 `mcp/server-memory` 生成并写回知识图谱快照，再输出最终文档或交接语句。
+> **Mandatory Requirement**: Before executing handoff or ending planning, must first call `mcp/server-memory` to generate and write back the knowledge graph snapshot, then output the final document or handoff statement.
 
-## 4. 触发词 Summary
+## 4. Trigger Word Summary
 
-当用户输入 `Summary`，或出现以下任一结束/移交信号时：
+When the user inputs `Summary`, or any of the following end/transfer signals appear:
 
-- 用户明确说“移交”“交给 coder”“转开发”“开始实现”“结束规划”。
-- 用户要求“输出最终文档”“给最终版本”“直接生成可交接稿”。
-- 对话已明确进入开发阶段且用户不再继续补充规划信息。
+- User explicitly says "handoff", "give to coder", "transfer to development", "start implementation", "finish planning".
+- User requests "output final document", "give final version", "directly generate handoff-ready draft".
+- Conversation has clearly entered the development phase and user no longer supplements planning information.
 
-处理动作如下：
+Processing actions:
 
-- 停止追问。
-- 先调用 `mcp/server-memory` 生成本轮规划知识图谱并回写 `8.2 Memory Snapshot`。
-- 严格输出下方 PRD 模板。
-- 不得改动章节结构。
-- 在生成文档时，必须预留 `9. 评估报告（Evaluator）` 区块，供审核智能体直接覆盖写入。
+- Stop asking further questions.
+- First call `mcp/server-memory` to generate this round's planning knowledge graph and write back `8.2 Memory Snapshot`.
+- Strictly output the PRD template below.
+- Do not modify section structure.
+- When generating the document, must reserve the `9. Evaluation Report (Evaluator)` section for the audit agent to directly overwrite.
 
-## 5. 输出模板分离机制
+## 5. Output Template Separation Mechanism
 
-在生成与维护 Hybrid Docs 文档时，**你必须读取并严格遵循同目录下的 `.github/skills/planner-prd-playbook/hybrid-template.md` 文件作为内容骨架。**
+When generating and maintaining Hybrid Docs documents, **you must read and strictly follow the `.github/skills/planner-prd-playbook/hybrid-template.md` file in the same directory as the content skeleton.**
 
-> **缓存命中优化设定核心**：
-> `hybrid-template.md` 采用了一种极其适应大语言模型底层 Token 缓存（Prompt Caching）的排版逻辑：
-> - 行文前部（静态区）：放置极少修改的全局背景、非功能性需求（4）、DoD（6）等静态基建信息。
-> - 行文中部（增量区）：放置随着规划可能追加的核心需求（7）与图谱索引（8）。
-> - 行文末部（动态区）：放置每次打回重做必然全面重写的代码审核报告（9）。
-> 
-> **请务必在规划输出时不改变章节的序号与物理前后顺序。**
+> **Caching Hit Optimization Core Setting**:
+> `hybrid-template.md` adopts a layout logic highly adapted to the underlying Token caching (Prompt Caching) mechanism of large language models:
+> - Front of document (Static Section): Place rarely-modified global background, non-functional requirements (4), DoD (6), and other static infrastructure information.
+> - Middle of document (Incremental Section): Place core requirements (7) and graph index (8) that may be appended during planning.
+> - End of document (Dynamic Section): Place the code audit report (9) that is completely rewritten on every rejection/rework.
+>
+> **Please ensure you do not change the section numbers or physical order when planning output.**
 
-## 6. 禁忌与质量门槛
+## 6. Prohibitions & Quality Gates
 
-- 未经用户确认，不得锁定具体业务规则。
-- 不要输出底层代码片段或过细 API 设计。
-- 在非 Summary 阶段保持对话与提问模式。
-- 关注产品语境、高层边界、可执行验收标准。
+- Must not lock down specific business rules without user confirmation.
+- Do not output low-level code snippets or overly detailed API designs.
+- Maintain conversation and questioning mode in non-Summary stages.
+- Focus on product context, high-level boundaries, and executable acceptance criteria.

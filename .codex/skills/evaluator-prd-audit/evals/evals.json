@@ -3,45 +3,45 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "请评估当前代码与 product-spec-context.md 的需求对齐情况。规格文档在项目根目录下，git 中有未提交的变更。",
-      "expected_output": "生成结构化评估报告，覆盖写入 product-spec-context.md 的 9. 评估报告区块，包含：需求符合度概览（至少识别出部分实现项）、代码问题清单、优化建议、综合结论",
+      "prompt": "Please evaluate the alignment between the current code and the requirements in product-spec-context.md. The specification document is in the project root directory, and there are uncommitted changes in git.",
+      "expected_output": "Generate a structured evaluation report, overwriting the 9. Evaluation Report section in product-spec-context.md, including: requirement compliance overview (at least identifying partially implemented items), code issue list, optimization suggestions, and comprehensive conclusion",
       "files": [
         "product-spec-context.md"
       ],
       "expectations": [
-        "评估报告覆盖写入 product-spec-context.md 的 9.* 区块，不做底部追加",
-        "识别出每一条需求的状态（✅/⚠️/❌/🔄）并给出对应代码位置",
-        "至少指出 1 个代码问题（需求偏离或质量缺陷），附文件路径和行号",
-        "至少给出 1 条可操作优化建议，附带优先级标注（P0/P1/P2）",
-        "综合结论段落总结整体实现质量"
+        "Evaluation report overwrites the 9.* section in product-spec-context.md, not appended at the bottom",
+        "Identify the status of each requirement (Passed/Partial/Failed/Unevaluable) with corresponding code locations",
+        "Identify at least 1 code issue (requirement deviation or quality defect) with file path and line number",
+        "Provide at least 1 actionable optimization suggestion with priority annotation (P0/P1/P2)",
+        "Comprehensive conclusion paragraph summarizes overall implementation quality"
       ]
     },
     {
       "id": 2,
-      "prompt": "我刚完成了第一轮实现，请帮我审计代码，检查 product-spec-context.md 中所有需求的完成质量，并指出需要优化的地方。",
-      "expected_output": "完整审计报告，包含质量审查维度的评估（正确性、健壮性、可维护性、性能隐患），以及具体的代码改进建议",
+      "prompt": "I just completed the first round of implementation. Please help me audit the code, check the completion quality of all requirements in product-spec-context.md, and point out areas that need optimization.",
+      "expected_output": "Complete audit report including quality review dimension assessment (correctness, robustness, maintainability, performance risks), and specific code improvement suggestions",
       "files": [
         "product-spec-context.md"
       ],
       "expectations": [
-        "评估报告覆盖所有规格需求，无遗漏",
-        "对每项代码质量问题标注严重程度（🔴P0/🟡P1/🟢P2）",
-        "质量审查涵盖至少 3 个维度（正确性、健壮性、可维护性、性能、安全性中的任意）",
-        "所有问题和建议均具体到文件路径，并参考 8.1 主索引或 8.3 增量索引",
-        "当发现代码中有错误处理缺失时，在问题清单中记录"
+        "Evaluation report covers all specification requirements with no omissions",
+        "Annotate severity level for each code quality issue (P0/P1/P2)",
+        "Quality review covers at least 3 dimensions (any from correctness, robustness, maintainability, performance, security)",
+        "All issues and suggestions specify file paths, referencing 8.1 main index or 8.3 incremental index",
+        "When missing error handling is found in code, record it in the issue list"
       ]
     },
     {
       "id": 3,
-      "prompt": "请运行 evaluator 审核当前实现是否与规格文档一致。",
-      "expected_output": "在没有 git diff 时自动回退到最近一次 commit 的变更进行审查，生成评估报告",
+      "prompt": "Please run the evaluator to audit whether the current implementation is consistent with the specification document.",
+      "expected_output": "When git diff is empty, automatically fall back to the most recent commit changes for review, and generate an evaluation report",
       "files": [
         "product-spec-context.md"
       ],
       "expectations": [
-        "当 git diff 为空时，自动检索最近一次 commit 的变更",
-        "评估报告中说明变更来源（commit hash）",
-        "仍按 9.* 区块完整格式覆盖写入评估报告"
+        "When git diff is empty, automatically retrieve the most recent commit changes",
+        "Evaluation report specifies the change source (commit hash)",
+        "Still overwrite the evaluation report in the full 9.* section format"
       ]
     }
   ]

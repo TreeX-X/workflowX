@@ -1,53 +1,53 @@
-# Auto-Compress Hybrid Docs (渐进式自动压缩技能)
+# Auto-Compress Hybrid Docs (Progressive Auto-Compression Skill)
 
-**描述 (Description)**: A progressive compression skill for `evaluatorX` to manage Hybrid Document bloat through multi-level compression strategies, adapted to document size.
+**Description**: A progressive compression skill for `evaluatorX` to manage Hybrid Document bloat through multi-level compression strategies, adapted to document size.
 
-此技能为 Evaluator 智能体提供**渐进式**的文档压缩能力。根据膨胀程度自动选择轻量、标准或深度压缩策略，避免过度压缩导致信息丢失。
+This skill provides **progressive** document compression capability for the Evaluator agent. Based on the degree of bloat, it automatically selects light, standard, or deep compression strategies to avoid information loss from over-compression.
 
 ---
 
-## 1. 压缩等级与触发阈值 (Progressive Compression Levels)
+## 1. Compression Levels & Trigger Thresholds (Progressive Compression Levels)
 
-| 等级 | 标识 | 体积阈值 | 行数阈值 | 压缩策略 |
+| Level | Identifier | Size Threshold | Line Count Threshold | Compression Strategy |
 |------|------|---------|---------|---------|
-| **L0 健康** | `healthy` | < 10KB | < 200 行 | 无需压缩，跳过 |
-| **L1 轻量** | `light` | 10 ~ 15KB | 200 ~ 300 行 | 仅执行文档索引去重与冗余裁剪 |
-| **L2 标准** | `standard` | 15 ~ 25KB | 300 ~ 500 行 | 文档索引提炼 + 知识图谱碎片清理 |
-| **L3 深度** | `aggressive` | > 25KB | > 500 行 | 全量压缩：索引提炼 + 图谱清理 + 归并 + 历史检查点归档 |
+| **L0 Healthy** | `healthy` | < 10KB | < 200 lines | No compression needed, skip |
+| **L1 Light** | `light` | 10 ~ 15KB | 200 ~ 300 lines | Only perform document index deduplication and redundancy trimming |
+| **L2 Standard** | `standard` | 15 ~ 25KB | 300 ~ 500 lines | Document index refinement + knowledge graph fragment cleanup |
+| **L3 Deep** | `aggressive` | > 25KB | > 500 lines | Full compression: index refinement + graph cleanup + merge + historical checkpoint archival |
 
-> **判定规则**：取体积和行数中**较高的等级**作为执行等级。例如文件 12KB 但 450 行 -> 执行 L2。
+> **Determination Rule**: Take the **higher level** between size and line count as the execution level. For example, a file of 12KB but 450 lines -> execute L2.
 
-## 2. 各等级操作规范
+## 2. Operations Specification per Level
 
-### L1 轻量压缩 (Light Compression)
-仅处理 Markdown 层面的冗余，不触碰知识图谱：
+### L1 Light Compression
+Only handle Markdown-level redundancy; do not touch the knowledge graph:
 
-1. **索引去重**：扫描 `8.1` 工程文件索引，合并重复文件路径条目。
-2. **增量区精简**：扫描 `8.3` 需求相关索引增量引用，删除已被合并进 `8.1` 主索引的过期增量条目。
-3. **检查点归档**：若 `10.*` 区块超过 5 条记录，仅保留 `#CP-1`、最近 3 条和所有 `PASS` 状态的检查点，删除其余。
-4. **目标**：将文档降至 200 行以下。
+1. **Index Deduplication**: Scan the `8.1` engineering file index and merge duplicate file path entries.
+2. **Incremental Section Refinement**: Scan the `8.3` requirement-related incremental index references and delete expired incremental entries that have already been merged into the `8.1` main index.
+3. **Checkpoint Archival**: If the `10.*` section has more than 5 records, only retain `#CP-1`, the most recent 3 entries, and all checkpoints with `PASS` status; delete the rest.
+4. **Goal**: Reduce the document to below 200 lines.
 
-### L2 标准压缩 (Standard Compression)
-在 L1 基础上增加知识图谱操作：
+### L2 Standard Compression
+Add knowledge graph operations on top of L1:
 
-5. **知识条目提炼**（继承 L1）：将 `8.1` 中细碎的、罗列式知识条目归纳整理、合并为 **3 至 5 条包含核心大意与抽象规则的精炼说明**。
-6. **图谱碎片清理**：调用 `mcp_memory_delete_entities` 和 `mcp_memory_delete_relations`，销毁增量迭代留下的零碎 Entity 和孤立 Relation。
-7. **边界约束**：务必遵守 Prompt Caching 阵列结构（静态区、增量区、动态区）。不要篡改头部的背景、DoD 准则等。压缩重点放在知识库碎片和增量区上。
-8. **目标**：将文档降至 300 行以下。
+5. **Knowledge Entry Refinement** (inherited from L1): Consolidate and merge fragmented, enumerated knowledge entries in `8.1` into **3 to 5 refined descriptions containing core ideas and abstract rules**.
+6. **Graph Fragment Cleanup**: Call `mcp_memory_delete_entities` and `mcp_memory_delete_relations` to destroy fragmented Entities and orphaned Relations left from incremental iterations.
+7. **Boundary Constraints**: Must adhere to the Prompt Caching array structure (static section, incremental section, dynamic section). Do not alter the header background, DoD criteria, etc. The compression focus should be on knowledge base fragments and incremental sections.
+8. **Goal**: Reduce the document to below 300 lines.
 
-### L3 深度压缩 (Aggressive Compression)
-在 L2 基础上执行全局重构：
+### L3 Deep Compression
+Execute global restructuring on top of L2:
 
-9. **图谱宏观实体归并**：调用 `mcp_memory_create_entities`，将零散知识打包成为包含整体架构核心大意的单体超大 `Module_Entity` 或 `System_Context_Entity`。
-10. **持久化回写**：更新 `8.2 Memory Snapshot`，用新大实体快照替换旧快照，保证文件态和 MCP Server 态完全同步。
-11. **静态区瘦身**：对 `1-6` 静态区中的冗余描述进行精简（保留核心约束，删除冗余示例和说明性文字）。
-12. **检查点截断**：`10.*` 仅保留 `#CP-1` 和最近 1 条检查点。
-13. **目标**：将文档降至 500 行以下。
+9. **Graph Macro Entity Merge**: Call `mcp_memory_create_entities` to package scattered knowledge into a single monolithic `Module_Entity` or `System_Context_Entity` containing the overall architecture core idea.
+10. **Persistent Writeback**: Update the `8.2 Memory Snapshot`, replacing the old snapshot with the new macro entity snapshot, ensuring file state and MCP Server state are fully synchronized.
+11. **Static Section Slimming**: Refine redundant descriptions in the `1-6` static sections (retain core constraints, delete redundant examples and explanatory text).
+12. **Checkpoint Truncation**: `10.*` only retains `#CP-1` and the most recent 1 checkpoint.
+13. **Goal**: Reduce the document to below 500 lines.
 
-## 3. 验收标准 (Success Criteria)
-1. 压缩等级判定准确（不遗漏、不过度）。
-2. 压缩后文档行数降至对应等级的目标值以下。
-3. 未丢失项目的核心非功能性要求或顶层 DoD 约定。
-4. L2/L3 压缩后明确发起了 `mcp_memory_delete_*` 工具调用（MCP 降级模式下跳过此条）。
-5. L3 压缩后明确发起了 `mcp_memory_create_*` 工具调用（MCP 降级模式下跳过此条）。
-6. 每次压缩后，在 hybrid 文档 `9.1` 元信息中追加 `last_compression: [等级]-[ISO时间]` 记录。
+## 3. Success Criteria
+1. Compression level determination is accurate (no omissions, no over-compression).
+2. Post-compression document line count is reduced below the target value for the corresponding level.
+3. No loss of core non-functional requirements or top-level DoD agreements from the project.
+4. After L2/L3 compression, `mcp_memory_delete_*` tool calls were clearly initiated (skip this criterion in MCP fallback mode).
+5. After L3 compression, `mcp_memory_create_*` tool calls were clearly initiated (skip this criterion in MCP fallback mode).
+6. After each compression, append a `last_compression: [level]-[ISO_time]` record in the hybrid document `9.1` metadata.

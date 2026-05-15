@@ -1,4 +1,4 @@
-# Prompt Templates Reference
+﻿# Prompt Templates Reference
 
 Full template library for Prompt Master. Read the relevant template when the user's task type matches. Do not load all templates at once — only the one you need.
 

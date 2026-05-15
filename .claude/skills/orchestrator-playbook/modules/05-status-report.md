@@ -1,54 +1,54 @@
-# 5. Status Report 规范 (`/status`)
+# 5. Status Report Specification (`/status`)
 
-`/status` 是一个**只读、零副作用**的响应式指令。执行时从当前 hybrid 文档中快速提取结构化信息并以简洁列表呈现给用户，**不在 hybrid 文档中写入任何内容**。
+`/status` is a **read-only, zero side-effect** reactive command. When executed, it quickly extracts structured information from the current hybrid document and presents it to the user as a concise list, **without writing anything to the hybrid document**.
 
-## 5.1 执行流程
+## 5.1 Execution Flow
 
-1. 读取当前 hybrid 文档。
-2. 提取以下信息并组装为摘要输出：
+1. Read the current hybrid document.
+2. Extract the following information and assemble as summary output:
 
-## 5.2 输出格式
-
-```markdown
-## 📊 WorkflowX Status Report
-
-**当前模式**: [whole / local / unit]
-**分支**: [若启用了 -b，显示工作分支名；否则显示当前 git 分支]
-
-### ✅ 已完成的工作
-- [功能/模块名] — 完成于 #CP-[编号]，评估结果: [PASS / 未审核]
-- ...
-
-### ⏳ 进行中 / 未完成的工作
-- [功能/模块名] — 状态: [coder实现中 / 待评估 / 评估打回修复中]
-  - 最近一次评估问题: [P0/P1 问题摘要，若有]
-- ...
-
-### 🔄 最近检查点
-- #CP-[最近编号]: [阶段] | [时间] | [已完成功能]
-```
-
-## 5.3 信息提取规则
-
-- **已完成**：从 `10. 迭代检查点` 区块中提取阶段为「评估通过」的条目，列出其已完成功能。
-- **未完成/进行中**：
-  - 检查 `9. 评估报告` 区块中是否有「评估结论 = 需修复」的记录 → 标记为「评估打回修复中」。
-  - 如果 `10.*` 最新检查点阶段为「coder实现完成」且无对应「评估通过」记录 → 标记为「待评估」。
-  - 如果上述均不匹配但 hybrid 文档中存在未勾选的 DoD（`6.*` 区块） → 列出未勾选项，标记为「待完成」。
-- **分支信息**：通过 `#tool:execute/runInTerminal` 执行 `git branch --show-current` 获取。
-- **无 hybrid 文档时**：输出「当前无活跃的 hybrid 文档，请先使用 `/whole`、`/local` 或 `/unit` 启动工作流。」
-
-## 5.4 并行模式状态展示
-
-当处于 `-parallel` 并行执行期间，`/status` 额外输出并行任务状态：
+## 5.2 Output Format
 
 ```markdown
-###   并行任务进度
-- **Task A** ({名称}): [coder实现中 / 待评估 / 评估通过 / 需修复 / FAILED]
-- **Task B** ({名称}): [状态]
-- **Task C** ({名称}): [状态]
+## WorkflowX Status Report
 
-**整体进度**: {已完成数}/{总数} 任务完成
+**Current Mode**: [whole / local / unit]
+**Branch**: [If `-b` is enabled, show the working branch name; otherwise show the current git branch]
+
+### Completed Work
+- [Feature/module name] -- completed at #CP-[number], evaluation result: [PASS / Not Audited]
+- ...
+
+### In Progress / Incomplete Work
+- [Feature/module name] -- Status: [coder implementing / Pending Evaluation / Evaluation Rejected - Fixing]
+  - Most recent evaluation issue: [P0/P1 issue summary, if any]
+- ...
+
+### Most Recent Checkpoint
+- #CP-[latest number]: [Phase] | [Time] | [Completed Features]
 ```
 
-信息来源：读取各 shadow doc 文件名（`*.TASK-*.md`）和其 Section 9 的评估结论。
+## 5.3 Information Extraction Rules
+
+- **Completed**: Extract entries from the `10. Iteration Checkpoints` section where the phase is "evaluation passed", listing their completed features.
+- **Incomplete/In Progress**:
+  - Check if the `9. Evaluation Report` section has records with "Evaluation Conclusion = Needs Fix" -> Mark as "Evaluation Rejected - Fixing".
+  - If the latest checkpoint in `10.*` phase is "coder implementation complete" with no corresponding "evaluation passed" record -> Mark as "Pending Evaluation".
+  - If neither of the above matches but unchecked DoD items exist in the hybrid document (`6.*` section) -> List unchecked items, marked as "Pending Completion".
+- **Branch Information**: Execute `git branch --show-current` via `#tool:execute/runInTerminal` to obtain.
+- **No hybrid document**: Output "No active hybrid document currently exists. Please first use `/whole`, `/local`, or `/unit` to start a workflow."
+
+## 5.4 Parallel Mode Status Display
+
+When in `-parallel` parallel execution, `/status` additionally displays parallel task status:
+
+```markdown
+### Parallel Task Progress
+- **Task A** ({name}): [coder implementing / Pending Evaluation / Evaluation Passed / Needs Fix / FAILED]
+- **Task B** ({name}): [Status]
+- **Task C** ({name}): [Status]
+
+**Overall Progress**: {completed count}/{total} tasks complete
+```
+
+Information source: Read each shadow doc filename (`*.TASK-*.md`) and its Section 9 evaluation conclusion.

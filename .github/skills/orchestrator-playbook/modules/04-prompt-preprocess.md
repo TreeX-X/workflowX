@@ -1,26 +1,26 @@
-# 4. Prompt Preprocessing Rules（Prompt 预处理规则）
+# 4. Prompt Preprocessing Rules (Prompt Preprocessing Rules)
 
-promptMasterX 是一个轻量 prompt 预处理智能体。职责单一：将用户的原始需求文本优化为高质量、无歧义、结构化的 prompt，然后交给下游智能体执行。
+promptMasterX is a lightweight prompt preprocessing agent. Its responsibility is single: optimize the user's raw requirement text into high-quality, unambiguous, structured prompts, then pass them to downstream agents for execution.
 
-**调用方式**：使用 `#tool:agent/runSubagent` 调用 `promptMasterX`，将原始需求文本作为 prompt 传给它。
+**Invocation Method**: Use `#tool:agent/runSubagent` to call `promptMasterX`, passing the raw requirement text as the prompt.
 
-## 4.1 跳过规则（优先于自动触发规则）
+## 4.1 Skip Rules (Take Priority Over Auto-Trigger Rules)
 
-当用户输入满足以下**任一**条件时，直接跳过 promptMasterX，将原始需求直传下游智能体：
-- 输入长度 **≤ 30 字符**（去除首尾空格后）— 短指令本身已足够精炼
-- 输入中**包含明确的文件路径**（如 `src/foo.ts`、`lib/bar.py`）**或函数名**（如 `getUserInfo`、`handleLogin`）— 精确指向无需优化
+When the user input satisfies **any** of the following conditions, skip promptMasterX directly and pass the raw requirement to the downstream agent:
+- Input length is **<= 30 characters** (after trimming leading/trailing whitespace) -- short instructions are already concise enough
+- Input **contains explicit file paths** (e.g., `src/foo.ts`, `lib/bar.py`) **or function names** (e.g., `getUserInfo`, `handleLogin`) -- precise references do not need optimization
 
-> 💡 理由：短指令已精炼、含路径/函数名的指令已精确，promptMasterX 优化只会增加额外开销且不产生价值。
+> Rationale: Short instructions are already refined; instructions with paths/function names are already precise; promptMasterX optimization only adds overhead without producing value.
 
-## 4.2 自动触发规则
+## 4.2 Auto-Trigger Rules
 
-| 模式 | 场景 | 是否调用 promptMasterX | 说明 |
+| Mode | Scenario | Call promptMasterX? | Description |
 |---|---|---|---|
-| `/unit` | 调用 coderX 前 | ✅ 自动调用 | 优化用户需求 + 原始需求一并传给 coderX |
-| `/local` | 首次调用 coderX 前 | ✅ 自动调用 | 同上 |
-| `/whole` | planner 阶段 | ❌ 不调用 | planner 阶段需要保留原始意图进行对话澄清 |
-| `/whole` | coder 阶段（PRD 确认后） | ❌ 不调用 | PRD 本身已是结构化的 |
-| `/whole` | evaluator 打回后修复轮 | ✅ 自动调用 | 将 evaluator 建议 + 用户补充合并优化后再传给 coderX |
-| `/prompt` | 直接调用 | ✅ | 不进入任何工作流，仅做 prompt 工程 |
+| `/unit` | Before calling coderX | Yes (auto) | Optimize user requirement + pass original requirement together to coderX |
+| `/local` | Before first calling coderX | Yes (auto) | Same as above |
+| `/whole` | Planner phase | No | Planner phase needs to retain original intent for conversational clarification |
+| `/whole` | Coder phase (after PRD confirmation) | No | PRD itself is already structured |
+| `/whole` | Fix round after evaluator rejection | Yes (auto) | Merge and optimize evaluator suggestions + user supplements before passing to coderX |
+| `/prompt` | Direct call | Yes | Does not enter any workflow; only performs prompt engineering |
 
-**传递规范**：优化后的 prompt 作为主体传给下游智能体，同时在上下文中附上原始需求文本，以防止意图丢失。
+**Passing Specification**: The optimized prompt is passed as the main body to the downstream agent, with the original requirement text attached in context to prevent intent loss.

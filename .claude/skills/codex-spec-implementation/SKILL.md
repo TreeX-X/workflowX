@@ -5,83 +5,83 @@ description: Spec-driven coding workflow for coderX agents. Use this skill whene
 
 # coderX: Spec-Driven Implementation Skill
 
-## 目标
+## Objectives
 
-让 coderX 按统一流程执行开发：
-- 先读规格与验收标准
-- 再读工程文件索引与知识索引
-- 再读审核报告并按优先级修复
-- 最后提交可验证的代码改动
+Enable coderX to execute development following a unified process:
+- First read specifications and acceptance criteria
+- Then read engineering file index and knowledge index
+- Then read audit reports and fix by priority
+- Finally submit verifiable code changes
 
-## 输入文档约定
+## Input Document Conventions
 
-优先读取上游明确交接或用户主动引用的文档；若无明确指定，则自动寻找正确的 `[功能模组]-hybrid.md` 文档。若没有主动引用且上下文中也无记载文档，coderX 依然被允许直接使用现有对话上下文继续操作。当存在明确的 hybrid 文档时，需重点关注其以下关键区块：
-- `4` 核心功能与验收标准
-- `5` 非功能性需求
-- `7` 完成定义（DoD）
-- `8.1` 工程文件索引与知识索引（主索引）
-- `8.2` Memory Snapshot（关键约束）
-- `8.3` 需求相关索引增量引用
-- `9` 评估报告（Evaluator Reserved Section）
-- `10` 迭代检查点（Incremental Checkpoints）— **由 orchestrator 自动管理，coderX 禁止修改此区块**
+Prioritize reading documents explicitly handed off by upstream agents or actively referenced by users; if no explicit specification is given, automatically locate the correct `[Feature Module]-hybrid.md` document. If there is no active reference and no document record in context, coderX is still allowed to continue operations directly using existing conversation context. When a hybrid document exists, focus on the following key sections:
+- `4` Core Features & Acceptance Criteria
+- `5` Non-Functional Requirements
+- `7` Definition of Done (DoD)
+- `8.1` Engineering File Index & Knowledge Index (Main Index)
+- `8.2` Memory Snapshot (Key Constraints)
+- `8.3` Requirement-Related Incremental Index References
+- `9` Evaluation Report (Evaluator Reserved Section)
+- `10` Iteration Checkpoints (Incremental Checkpoints) — **Automatically managed by orchestrator; coderX is prohibited from modifying this section**
 
-### Memory Snapshot 与知识图谱使用规范
+### Memory Snapshot & Knowledge Graph Usage Rules
 
-- Hybrid 文档奉行“树干与树叶分离”原则：Markdown 文件内（如 `8.2`）只存“树干”（高阶需求结构与知识节点大纲/指针）。
-- “树叶”（具体的代码逻辑关系、代码级上下文约束等详尽信息）完全存储在 `mcp/server-memory` 的节点（Nodes）中。
-- coderX 在实现前，读取 `8.2` 获得所需的图谱节点大纲后，**必须主动通过 MCP Server 调用** 相关工具（如 `mcp_memory_open_nodes` 或 `mcp_memory_search_nodes`）去查询检索与当前实现任务直接关切的 Node 详情数据。不要期望 Markdown 里包含全部细节。
+- Hybrid docs follow the "trunk and leaves separation" principle: Markdown files (e.g., `8.2`) only store the "trunk" (high-level requirement structure and knowledge node outlines/pointers).
+- "Leaves" (detailed code logic relationships, code-level context constraints, etc.) are entirely stored in the nodes of `mcp/server-memory`.
+- Before implementation, after reading `8.2` to obtain the required graph node outline, coderX **must actively call** the relevant tools via MCP Server (such as `mcp_memory_open_nodes` or `mcp_memory_search_nodes`) to query and retrieve Node detail data directly relevant to the current implementation task. Do not expect all details to be in Markdown.
 
-## 执行流程
+## Execution Process
 
-### 第一步：需求对齐
+### Step 1: Requirement Alignment
 
-1. 读取 `4/5/7`，提取本轮必须满足的功能点、验收标准和非功能约束。
-2. 形成本轮任务清单，避免实现超出范围。
+1. Read `4/5/7`, extract the functional points, acceptance criteria, and non-functional constraints that must be satisfied in this round.
+2. Form the current round task list; avoid implementing beyond scope.
 
-### 第二步：上下文定向加载（MCP 深度检索）
+### Step 2: Context-Oriented Loading (MCP Deep Retrieval)
 
-1. 先读 `8.1` 主索引，确认涉及的核心文件、模块、入口。
-2. 读 `8.2` 获取核心架构的图谱大纲与引用节点。
-3. **调用 MCP 图谱层检索**：基于获取到的大纲指针，使用 `mcp_memory_open_nodes` 或相关 MCP 工具精准检索出与你当前关心的模块相关的具体代码逻辑关系与约束，将其作为真实上下文。
-4. 再读 `8.3` 增量索引，优先加载本轮变化相关上下文。
+1. First read the `8.1` main index to confirm the involved core files, modules, and entry points.
+2. Read `8.2` to obtain the core architecture graph outline and referenced nodes.
+3. **Call MCP Graph Layer Retrieval**: Based on the obtained outline pointers, use `mcp_memory_open_nodes` or related MCP tools to accurately retrieve specific code logic relationships and constraints relevant to your currently focused module, using them as real context.
+4. Then read the `8.3` incremental index, prioritizing the loading of context related to this round's changes.
 
-### 第三步：审核反馈处理（结合总线通信，条件执行）
+### Step 3: Audit Feedback Handling (Combined with Bus Communication, Conditional Execution)
 
-1. **读取管道负载**：优先读取上游 evaluatorX 通过对话交接直接传递过来的“评估总结总线负载”，快速圈定本轮需要修复的核心问题与方向。
-2. **对齐详细报告**：读取 hybrid 文档预留的 `9` 评估报告区块，获取具体的行号与代码级问题细节。
-3. 若存在有效问题项：按严重度与优先级处理，顺序为 `P0/🔴 -> P1/🟡 -> P2/🟢`。
-4. 若无有效问题项或为空：跳过审核修复流程，按规格直接往下完成新实现。
+1. **Read Pipeline Payload**: Prioritize reading the "Evaluation Summary Bus Payload" directly handed off by upstream evaluatorX in the conversation, quickly identifying the core issues and directions to fix in this round.
+2. **Align Detailed Report**: Read the `9` evaluation report section reserved in the hybrid document to obtain specific line numbers and code-level issue details.
+3. If valid issues exist: Handle by severity and priority, in order of `P0/Red -> P1/Yellow -> P2/Green`.
+4. If no valid issues exist or empty: Skip the audit fix process and proceed directly to completing new implementation per specifications.
 
-### 第四步：实现与验证
+### Step 4: Implementation & Verification
 
-1. 仅修改与任务相关的最小文件集合，避免无关重构。
-2. 对每项改动映射到验收标准，确保可验证。
-3. 执行必要的构建/测试/静态检查，记录结果。
+1. Only modify the minimal file set related to the task; avoid unrelated refactoring.
+2. Map each change to acceptance criteria, ensuring verifiability.
+3. Execute necessary builds/tests/static checks and record results.
 
-### 第五步：总线管道输出与交接 evaluator (Bus Pipeline Handoff)
+### Step 5: Bus Pipeline Output & Handoff to Evaluator
 
-实现完成后，不仅要维护 hybrid 文档与图谱快照，还**必须在调用任务完成或呼叫子智能体之前，在当前的对话上下文中主动输出一份标准化的"阶段成果总线负载 (Pipeline Payload)"**，供后续的 evaluatorX 定向读取审核。
+After implementation is complete, not only maintain the hybrid document and graph snapshot, but also **must proactively output a standardized "Phase Result Bus Payload (Pipeline Payload)" in the current conversation context before calling task completion or invoking sub-agents**, for the subsequent evaluatorX to read and review directionally.
 
-> ⚠️ **格式强制要求**：orchestrator 会对本 Payload 进行结构化校验，校验不通过将被打回重写。请严格按照以下必填字段输出。
+> **Format Enforcement**: The orchestrator will perform structured validation on this Payload; failure will result in rejection and rewrite. Please strictly output according to the following required fields.
 
-负载内容格式如下：
+Payload content format:
 
 ```markdown
-### 📦 Bus Pipeline Payload: Implementation Summary
-- **已完成功能项**: [列出本轮完成的 PRD 需求模块名称或编号]
-- **核心修改清单**:
-  - [文件路径] — [修改角色/逻辑摘要]
+### Bus Pipeline Payload: Implementation Summary
+- **Completed Feature Items**: [List the PRD requirement module names or numbers completed in this round]
+- **Core Modification List**:
+  - [File path] — [Modification role/logic summary]
   - ...
-- **提请定向审核点**: [指明复杂逻辑或外部依赖，提示 evaluatorX 重点审阅]
-- **关联 Hybrid 文档**: [hybrid 文档路径]
-- **覆盖写入要求**: 请 evaluatorX 将评估报告覆盖写入 hybrid 文档的 `9.*` 区块
+- **Directed Audit Request Points**: [Specify complex logic or external dependencies, prompting evaluatorX to focus review]
+- **Associated Hybrid Document**: [hybrid document path]
+- **Overwrite Requirement**: Please evaluatorX overwrite the evaluation report to the `9.*` section of the hybrid document
 ```
 
-## 输出约束
+## Output Constraints
 
-1. 不得跳过规格读取直接编码。
-2. 不得忽略 `8.1/8.3` 的索引上下文。
-3. 对 `9` 的处理必须条件化：有内容则优先修复，无内容则跳过。
-4. 不得虚构测试结果或需求完成状态。
-5. 保持改动可追踪：每项改动都能回指到规格条目或评估问题。
-6. 对图谱驱动改动保持可追踪：每项改动应能回指到 `8.2` 的节点或关系证据。
+1. Must not skip specification reading and directly code.
+2. Must not ignore the `8.1/8.3` index context.
+3. Processing of `9` must be conditional: if content exists, prioritize fixes; if empty, skip.
+4. Must not fabricate test results or requirement completion status.
+5. Keep changes traceable: every change can be traced back to specification items or evaluation issues.
+6. Keep graph-driven changes traceable: every change should be traceable to `8.2` nodes or relationship evidence.
