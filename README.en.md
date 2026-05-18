@@ -32,6 +32,7 @@ Modern LLMs perform best when focused on a single, well-defined problem. Workflo
 1. **Master Orchestrator Agent**: Acts as the central brain. It analyzes the main user prompt, plans the workflow path, and awakens the corresponding sub-agents at various nodes.
 2. **Specialized Sub-Agents (Pure Context)**: Invoked via the `runSubAgent` protocol. Each sub-agent is awakened with a **pristine, strictly isolated context**, ensuring it operates at peak performance and focus without historical noise.
 3. **Hybrid Document State Flow**: Instead of accumulating invisible black-box context like traditional chat histories, task progress, knowledge indexing, and architecture details are persisted into human-readable **Hybrid Documents**.
+4. **Bus Pipeline Communication**: Agents don't pass verbose chat histories to each other — they exchange minimalist "Payloads" (e.g., coderX outputs: "I focused on fixing Logic B in File A, please review directionally"). Combined with a single source of truth (`[Feature]-hybrid.md`), this fundamentally eliminates context-stacking hallucinations.
 
 ## ✨ Core Capabilities
 
@@ -195,12 +196,6 @@ Since config directories are independent, you can use the same workflow across t
 
 All three share the same skill definitions (in each platform's `skills/` directory), ensuring consistent workflow behavior.
 
-## 💎 Bus Pipeline Mechanism — Eradicating Context Hallucinations
-
-The biggest flaw in traditional AI development is the continuous stacking and pollution of dialog context, causing the AI to drift off course. WorkflowX solves this via isolated SubAgents and a "Bus Pipeline":
-- **Pristine Awakening**: When sub-agents (coder, evaluator) are awakened, they do not inherit redundant discussions and historical errors. They start fresh, focused, and operating at absolute peak intelligence every time.
-- **Payload Handoff**: Agents do not throw long historical texts at each other. They feed each other minimalist "Payloads." (E.g., coderX outputs: "I focused on fixing Logic B in File A, please review directionally"). This drastically improves evaluation focus and almost entirely eliminates hallucinations.
-- **Single Source of Truth**: The entire iteration lifecycle relies on just ONE living document: `[Feature]-hybrid.md`. Static requirements at the top, incremental knowledge in the middle, code health reports at the bottom. Transparently transmitted to AI while safely allowing human intervention at any point.
 
 ## 🌟 About
 
