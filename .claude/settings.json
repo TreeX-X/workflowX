@@ -4,5 +4,7 @@
   "effort": "medium",
   "permissions": {
     "defaultMode": "bypassPermissions"
-  }
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": ["obsidian", "server-memory", "server-sequential-thinking"]
 }

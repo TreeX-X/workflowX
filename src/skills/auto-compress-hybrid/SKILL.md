@@ -41,7 +41,7 @@ Execute global restructuring on top of L2:
 9. **Graph Macro Entity Merge**: Call `mcp_memory_create_entities` to package scattered knowledge into a single monolithic `Module_Entity` or `System_Context_Entity` containing the overall architecture core idea.
 10. **Persistent Writeback**: Update the `8.2 Memory Snapshot`, replacing the old snapshot with the new macro entity snapshot, ensuring file state and MCP Server state are fully synchronized.
 11. **Static Section Slimming**: Refine redundant descriptions in the `1-6` static sections (retain core constraints, delete redundant examples and explanatory text).
-12. **Checkpoint Truncation**: `10.*` only retains `#CP-1` and the most recent 1 checkpoint.
+12. **Checkpoint Truncation**: `10.*` only retains `#CP-1`, the most recent 1 checkpoint, and all checkpoints with `PASS` status.
 13. **Goal**: Reduce the document to below 500 lines.
 
 ## 3. Success Criteria

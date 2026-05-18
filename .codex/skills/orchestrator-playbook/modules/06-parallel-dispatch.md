@@ -69,9 +69,9 @@ For each confirmed parallel task T:
    > Prohibited from modifying Section 1-7, 8.1, 8.3, 10.
    ```
 3. **Section 10**: Add task prefix marker `<!-- TASK_ID: {T.id} -->` at the top
-4. If `-box` is used: Create independent branch for each task
-   - Branch naming: `wfx/parallel-{TASK-ID}-{short-summary}-{YYYYMMDD-HHmm}`
-   - Example: `wfx/parallel-A-feat-auth-20260514-1530`
+4. If `-box` is used: Create isolation for each task
+   - **Claude Code**: Use `EnterWorktree` to create an independent worktree per task. Worktree naming: `parallel-{TASK-ID}-{short-summary}`. This provides true filesystem-level isolation without branch switching.
+   - **Codex / Copilot**: Fall back to independent branch per task. Branch naming: `wfx/parallel-{TASK-ID}-{short-summary}-{YYYYMMDD-HHmm}`. Example: `wfx/parallel-A-feat-auth-20260514-1530`
 
 ## 6.4 Dispatch Specification
 
@@ -87,15 +87,66 @@ Construct independent prompts for each task pair (coderX + evaluatorX), must inc
 
 ### 6.4.2 Dispatch Order
 
-Due to Claude Code's Agent tool being synchronous calls, adopt **alternating round-robin dispatch**:
+Dispatch strategy depends on the current platform's capabilities:
+
+#### Platform Capability Matrix
+
+| Capability | Claude Code | Codex | Copilot |
+|---|---|---|---|
+| Sub-agent dispatch | `Agent` tool | Sub-agent scheduling | `agent/runSubagent` + handoffs |
+| Background parallel | `run_in_background: true` | Not supported | Not supported |
+| Worktree isolation | `EnterWorktree` / `ExitWorktree` | Not supported | Not supported |
+
+Detect the platform at runtime (check available tools / config). Use the corresponding dispatch mode below.
+
+#### Mode CC (Claude Code): True Pipeline Parallel
+
+Use `run_in_background: true` to launch sub-agents concurrently. As each coderX completes, immediately launch its evaluatorX without waiting for other tasks.
 
 ```
-Round 1: coderX-A -> coderX-B -> coderX-C
-        (Wait for all coderX to return and validate Payload)
-Round 1: evaluatorX-A -> evaluatorX-B -> evaluatorX-C
-        (Wait for all evaluatorX to return and validate Payload)
-Round 2 (if needed): coderX-A(fix) -> coderX-B(fix) -> ...
+t0:  coderX-A [bg]  coderX-B [bg]  coderX-C [bg]
+     (all three run concurrently)
+
+t1:  coderX-A finishes -> immediately launch evaluatorX-A [bg]
+     (coderX-B and coderX-C still running)
+
+t2:  evaluatorX-A finishes -> PASS, task A done
+     coderX-B finishes -> immediately launch evaluatorX-B [bg]
+
+t3:  evaluatorX-B finishes -> Needs Fix -> launch coderX-B(fix) [bg]
+     coderX-C finishes -> immediately launch evaluatorX-C [bg]
+     ...pipeline continues...
 ```
+
+Orchestrator maintains a **task state table**, polling for completed background agents:
+
+| Task | Phase | Status |
+|---|---|---|
+| A | coderX | running / done / failed |
+| A | evaluatorX | pending / running / done / PASS / NeedsFix |
+| B | coderX | ... |
+
+**Completion detection**: After launching all initial coderX calls, enter a poll loop:
+1. Check which background agents have completed
+2. For each completed coderX: validate Payload -> launch evaluatorX [bg]
+3. For each completed evaluatorX: validate Payload -> if PASS mark done, if NeedsFix launch coderX(fix) [bg] (if iterations remain)
+4. Repeat until all tasks are done or max iterations reached
+
+**Key rule**: There is NO barrier. Do NOT wait for all coderX to finish before starting any evaluatorX. Each task flows independently through its own coder->evaluator pipeline.
+
+#### Mode Serial (Codex / Copilot): Per-Task Chain
+
+No background parallel available. Instead of round-robin with full barrier, dispatch **per-task serial chains**:
+
+```
+Chain A: coderX-A -> evaluatorX-A -> PASS ✅ (or NeedsFix -> coderX-A(fix) -> evaluatorX-A)
+Chain B: coderX-B -> evaluatorX-B -> PASS ✅
+Chain C: coderX-C -> evaluatorX-C -> PASS ✅
+```
+
+**Key improvement over old round-robin**: Each task's coder->evaluator pair runs as a complete unit. Task A's evaluator does NOT wait for Task C's coder to finish. This breaks the "all coderX must complete before any evaluatorX" barrier.
+
+Execute chains sequentially: run Chain A to completion (including all fix iterations), then Chain B, then Chain C. Within each chain, iterations follow the normal coder->evaluator loop until PASS or max iterations.
 
 After each coderX/evaluatorX returns, immediately validate its Bus Payload (including task_id) per module 02.
 
@@ -109,12 +160,19 @@ After all tasks complete (or partially fail), orchestratorX executes the merge:
 
 ### 6.5.1 Code Merge
 
-| Mode | Operation |
-|---|---|
-| `-parallel` (no -box) | All tasks work on the same branch; verify `git diff --check` has no conflicts |
-| `-box -parallel` | Switch back to original branch; sequentially `git merge --no-ff` each task branch |
+| Mode | Platform | Operation |
+|---|---|---|
+| `-parallel` (no -box) | All | All tasks work on the same branch; verify `git diff --check` has no conflicts |
+| `-box -parallel` | Claude Code | Each task completed in its own worktree. Merge via `git merge` from worktree branches. No branch switching needed. |
+| `-box -parallel` | Codex / Copilot | Switch back to original branch; sequentially `git merge --no-ff` each task branch |
 
-Pre-merge audit: `git diff --name-only` for each task branch, compare declared file sets, detect out-of-scope modifications.
+Pre-merge audit: `git diff --name-only` for each task branch/worktree, compare declared file sets, detect out-of-scope modifications.
+
+**Worktree merge procedure** (Claude Code `-box -parallel`):
+1. After all tasks complete, return to original branch (call `ExitWorktree` per task or orchestrate from main)
+2. For each successful task worktree: `git merge --no-ff {worktree-branch}`
+3. For conflicts: stop and report to user with conflicting files
+4. After all merges: `ExitWorktree action=remove` for successful worktrees; `action=keep` for failed task worktrees
 
 ### 6.5.2 Hybrid Doc Merge
 
@@ -170,15 +228,18 @@ FAILED: Task B ({name}) -- reached maximum iteration count {N}, evaluation did n
 ## 6.7 Interaction with `-box` Parameter
 
 - `/whole -parallel` (no -box): All tasks work on the same branch; shadow docs provide document-level isolation
-- `/whole -box -parallel`: Each task gets an independent git branch; document + branch double isolation
+- `/whole -box -parallel` (Claude Code): Each task gets an independent git worktree via `EnterWorktree`; document + filesystem double isolation. No branch switching overhead.
+- `/whole -box -parallel` (Codex / Copilot): Each task gets an independent git branch; document + branch double isolation
 - Command parameter order is flexible: `/whole -box -parallel` = `/whole -parallel -box`
 
 ## 6.8 Interaction with `/rollback`
 
 When `/rollback` is received during parallel execution:
-1. **Abort** all running task pairs
+1. **Abort** all running task pairs (stop any background agents if in CC pipeline mode)
 2. **Delete** all shadow docs
-3. If `-box` was used: **Delete** all task branches (`git branch -D`)
+3. If `-box` was used:
+   - **Claude Code**: `ExitWorktree action=remove discard_changes=true` for all task worktrees
+   - **Codex / Copilot**: **Delete** all task branches (`git branch -D`)
 4. **Execute standard rollback** process on the master doc (refer to module 03)
 
 ## 6.9 Interaction with `/status`
