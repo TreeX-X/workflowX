@@ -4,6 +4,7 @@
 
 # 🧰WorkflowX:基于 SubAgent 调度的混合多智能体工作流
 
+![alt text](docx/images/WorkFlowX-Logo.png)
 WorkflowX 是一套**纯文件驱动的多智能体编排配置系统**——无需安装服务、无需搭建运行时，将配置文件拷贝到您的 AI IDE 项目中即可完成部署。它充分利用主流 CLI 工具的 `runSubAgent` 能力，通过主智能体（Orchestrator）智能委派任务给多个专职子智能体（SubAgents），实现开发全链路的高效流转。
 
 

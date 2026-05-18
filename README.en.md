@@ -4,6 +4,7 @@
 
 # 🧰 WorkflowX: SubAgent-based Hybrid Orchestration Workflow
 
+![alt text](docx/images/WorkFlowX-Logo.png)
 WorkflowX is a **pure file-driven multi-agent orchestration configuration system** — no servers to install, no runtime to set up. Just copy the config files into your AI IDE project and you're ready to go. By leveraging the `runSubAgent` capabilities of mainstream CLI tools, it builds an ecosystem where a master orchestrator intelligently delegates tasks to specialized sub-agents.
 
 [![License](https://img.shields.io/badge/License-MIT-3B82F6?style=for-the-badge)](./LICENSE)
