@@ -3,7 +3,9 @@
     "allow": [
       "Bash(xxd)",
       "Bash(cp /d/ZK_Workspace/Git/workflowX/.claude/skills/orchestrator-playbook/modules/*.md /d/ZK_Workspace/Git/workflowX/src/skills/orchestrator-playbook/modules/)",
-      "Bash(cp /d/ZK_Workspace/Git/workflowX/.claude/skills/orchestrator-playbook/SKILL.md /d/ZK_Workspace/Git/workflowX/src/skills/orchestrator-playbook/SKILL.md)"
+      "Bash(cp /d/ZK_Workspace/Git/workflowX/.claude/skills/orchestrator-playbook/SKILL.md /d/ZK_Workspace/Git/workflowX/src/skills/orchestrator-playbook/SKILL.md)",
+      "Bash(mkdir -p D:/ZK_Workspace/Git/workflowX/.claude/commands)",
+      "Bash(mkdir -p D:/ZK_Workspace/Git/workflowX/.codex/commands)"
     ]
   },
   "enableAllProjectMcpServers": true,

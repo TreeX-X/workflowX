@@ -27,6 +27,7 @@ from typing import Optional
 ROOT = Path(__file__).resolve().parent.parent
 SRC_AGENTS = ROOT / "src" / "agents"
 SRC_SKILLS = ROOT / "src" / "skills"
+SRC_PROMPTS = ROOT / "src" / "prompts"
 CONFIG_PATH = ROOT / "script" / "sync_config.json"
 
 PLACEHOLDER = "{{PLATFORM_SKILLS}}"
@@ -41,6 +42,8 @@ class PlatformConfig:
     skills_path: str
     agents_path: str
     agent_suffix: str
+    prompts_path: str  # Path for prompt/command files (empty = skip)
+    prompt_suffix: str  # File extension for prompt files
     # Whether to validate tool/handoff metadata exists in config
     needs_metadata: bool = True
 
@@ -50,18 +53,24 @@ PLATFORMS = {
         skills_path=".github/skills",
         agents_path=".github/agents",
         agent_suffix=".agent.md",
+        prompts_path=".github/prompts",
+        prompt_suffix=".prompt.md",
     ),
     "codex": PlatformConfig(
         name="codex",
         skills_path=".codex/skills",
         agents_path=".codex/agents",
         agent_suffix=".toml",
+        prompts_path="",  # Codex has no prompt file mechanism
+        prompt_suffix="",
     ),
     "claude": PlatformConfig(
         name="claude",
         skills_path=".claude/skills",
         agents_path=".claude/agents",
         agent_suffix=".md",
+        prompts_path=".claude/commands",
+        prompt_suffix=".md",
     ),
 }
 
@@ -139,6 +148,28 @@ def load_agent_source(file_path: Path) -> AgentSource:
         name=name,
         description=description,
         argument_hint=argument_hint,
+        body=body,
+        file_path=file_path,
+    )
+
+@dataclass
+class PromptSource:
+    """Parsed src/prompts/*.md file."""
+    name: str
+    description: str
+    body: str  # Everything after the frontmatter
+    file_path: Path
+
+def load_prompt_source(file_path: Path) -> PromptSource:
+    content = file_path.read_text(encoding="utf-8-sig")
+    fm, body = parse_frontmatter(content)
+
+    name = fm.get("name", file_path.stem)
+    description = fm.get("description", "")
+
+    return PromptSource(
+        name=name,
+        description=description,
         body=body,
         file_path=file_path,
     )
@@ -240,6 +271,32 @@ GENERATORS = {
 }
 
 # ============================================================================
+# Prompt Generators
+# ============================================================================
+
+def generate_copilot_prompt(src: PromptSource, platform: PlatformConfig) -> str:
+    """Generate .github/prompts/*.prompt.md"""
+    lines = ["---"]
+    lines.append(f"name: {src.name}")
+    lines.append(f'description: {src.description}')
+    lines.append("---")
+    lines.append("")
+
+    body = src.body.replace("$ARGUMENTS", "${input:args}")
+    lines.append(body)
+
+    return "\n".join(lines)
+
+def generate_claude_prompt(src: PromptSource, platform: PlatformConfig) -> str:
+    """Generate .claude/commands/*.md (plain body, no frontmatter)"""
+    return src.body
+
+PROMPT_GENERATORS = {
+    "copilot": generate_copilot_prompt,
+    "claude": generate_claude_prompt,
+}
+
+# ============================================================================
 # Skill Sync
 # ============================================================================
 
@@ -280,8 +337,39 @@ def sync_skills(platform: PlatformConfig, dry_run: bool = False) -> list[str]:
     return changes
 
 # ============================================================================
-# Agent Sync
+# Prompt Sync
 # ============================================================================
+
+def sync_prompts(platform: PlatformConfig, dry_run: bool = False) -> list[str]:
+    """Generate platform prompt files from src/prompts/."""
+    changes = []
+
+    if not platform.prompts_path or not SRC_PROMPTS.exists():
+        return changes
+
+    gen = PROMPT_GENERATORS.get(platform.name)
+    if not gen:
+        return changes
+
+    target_dir = ROOT / platform.prompts_path
+    target_dir.mkdir(parents=True, exist_ok=True)
+
+    for src_file in sorted(SRC_PROMPTS.glob("*.md")):
+        src = load_prompt_source(src_file)
+        output = gen(src, platform)
+
+        target_file = target_dir / f"{src.name}{platform.prompt_suffix}"
+
+        if target_file.exists():
+            existing = target_file.read_text(encoding="utf-8-sig")
+            if existing == output:
+                continue
+
+        changes.append(str(target_file.relative_to(ROOT)))
+        if not dry_run:
+            target_file.write_text(output, encoding="utf-8")
+
+    return changes
 
 def sync_agents(platform: PlatformConfig, config: dict, dry_run: bool = False) -> list[str]:
     """Generate platform agent files from src/agents/."""
@@ -367,7 +455,26 @@ def verify_platform(platform: PlatformConfig, config: dict) -> list[str]:
                     actual = target_file.read_text(encoding="utf-8-sig")
                     if actual != expected:
                         issues.append(f"OUTDATED: {target_file.relative_to(ROOT)}")
-    
+
+    # Check prompts
+    if platform.prompts_path and SRC_PROMPTS.exists():
+        gen = PROMPT_GENERATORS.get(platform.name)
+        if gen:
+            target_dir = ROOT / platform.prompts_path
+
+            for src_file in sorted(SRC_PROMPTS.glob("*.md")):
+                src = load_prompt_source(src_file)
+                expected = gen(src, platform)
+
+                target_file = target_dir / f"{src.name}{platform.prompt_suffix}"
+
+                if not target_file.exists():
+                    issues.append(f"MISSING: {target_file.relative_to(ROOT)}")
+                else:
+                    actual = target_file.read_text(encoding="utf-8")
+                    if actual != expected:
+                        issues.append(f"OUTDATED: {target_file.relative_to(ROOT)}")
+
     return issues
 
 # ============================================================================
@@ -381,6 +488,7 @@ def main():
     parser.add_argument("--verify", action="store_true", help="Verify consistency only")
     parser.add_argument("--agents-only", action="store_true", help="Sync agents only")
     parser.add_argument("--skills-only", action="store_true", help="Sync skills only")
+    parser.add_argument("--prompts-only", action="store_true", help="Sync prompts only")
     args = parser.parse_args()
     
     config = load_config()
@@ -408,7 +516,7 @@ def main():
         
         total_changes = []
         
-        if not args.skills_only:
+        if not args.skills_only and not args.prompts_only:
             agent_changes = sync_agents(plat, config, args.dry_run)
             total_changes.extend(agent_changes)
             if agent_changes:
@@ -417,8 +525,8 @@ def main():
                     print(f"    {'[DRY] ' if args.dry_run else ''}{c}")
             else:
                 print(f"\n  Agents: ✅ up to date")
-        
-        if not args.agents_only:
+
+        if not args.agents_only and not args.prompts_only:
             skill_changes = sync_skills(plat, args.dry_run)
             total_changes.extend(skill_changes)
             if skill_changes:
@@ -427,6 +535,16 @@ def main():
                     print(f"    {'[DRY] ' if args.dry_run else ''}{c}")
             else:
                 print(f"\n  Skills: ✅ up to date")
+
+        if not args.agents_only and not args.skills_only:
+            prompt_changes = sync_prompts(plat, args.dry_run)
+            total_changes.extend(prompt_changes)
+            if prompt_changes:
+                print(f"\n  Prompts ({len(prompt_changes)}):")
+                for c in prompt_changes:
+                    print(f"    {'[DRY] ' if args.dry_run else ''}{c}")
+            else:
+                print(f"\n  Prompts: ✅ up to date")
         
         if not total_changes:
             print(f"\n  Result: ✅ No changes needed")

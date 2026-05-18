@@ -1,0 +1,19 @@
+---
+name: local
+description: 以局部模式（Mode B）执行工作流：跳过PRD，直接 promptMasterX优化 → coderX编码 → evaluatorX审查
+---
+
+请调用 orchestratorX 智能体，以局部模式（Mode B: local）执行以下需求。
+
+用户输入：${input:args}
+
+执行流程：
+1. 加载运行时环境（模块 01）
+2. 跳过 PRD 规划，直接调用 promptMasterX 优化执行指令（模块 04）
+3. 调用 coderX 根据指令编码实现
+4. 总线载荷校验（模块 02）+ 创建检查点（模块 03）
+5. 调用 evaluatorX 定向审查
+6. 如需修复，循环步骤 3-5（默认最多 2 轮，可通过 -N 参数覆盖）
+
+支持的参数（从 ${input:args} 中解析）：
+- -N [数字]：限定评估最大迭代轮数
