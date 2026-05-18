@@ -4,7 +4,7 @@
 
 # 🧰 WorkflowX: SubAgent-based Hybrid Orchestration Workflow
 
-WorkflowX is an advanced multi-agent orchestration framework designed to supercharge your AI-assisted development. By leveraging the `runSubAgent` capabilities of mainstream CLI tools, it builds an ecosystem where a master orchestrator intelligently delegates tasks to specialized sub-agents. 
+WorkflowX is a **pure file-driven multi-agent orchestration configuration system** — no servers to install, no runtime to set up. Just copy the config files into your AI IDE project and you're ready to go. By leveraging the `runSubAgent` capabilities of mainstream CLI tools, it builds an ecosystem where a master orchestrator intelligently delegates tasks to specialized sub-agents.
 
 [![License](https://img.shields.io/badge/License-MIT-3B82F6?style=for-the-badge)](./LICENSE)
 [![Skills](https://img.shields.io/badge/Skills-3-10B981?style=for-the-badge)](#-skills)
@@ -19,9 +19,9 @@ WorkflowX is an advanced multi-agent orchestration framework designed to superch
 
 The core philosophy: **Independent context for maximum efficiency, and hybrid document-driven state (Hybrid Docs) for seamless human-in-the-loop interaction.**
 
-## 🌟 Core Concepts
+## 🌟 Design Philosophy
 
-- **Automated Deployment, Agile Process & Continuous Delivery**
+- **Zero-dependency deployment, config-and-run**
 - **Reduce Hallucinations & Maximize Single-Step Efficiency**
 - **Single-Point Operations with Global Synchronization**
 
@@ -33,11 +33,59 @@ Modern LLMs perform best when focused on a single, well-defined problem. Workflo
 2. **Specialized Sub-Agents (Pure Context)**: Invoked via the `runSubAgent` protocol. Each sub-agent is awakened with a **pristine, strictly isolated context**, ensuring it operates at peak performance and focus without historical noise.
 3. **Hybrid Document State Flow**: Instead of accumulating invisible black-box context like traditional chat histories, task progress, knowledge indexing, and architecture details are persisted into human-readable **Hybrid Documents**.
 
-## ✨ Key Features
+## ✨ Core Capabilities
 
-- 🤖 **Seamless Auto / Semi-Auto Shift**: Because cross-agent state is continuously persisted via clear Markdown/Text hybrid docs, human developers can safely pause, intervene, and guide the workflow by directly editing the documents for the next agent.
-- 🧹 **Zero Context Pollution**: Strictly filters input information for each sub-agent. By blocking redundant long-history chats, it significantly drops the statistical probabilty of LLM hallucinations.
-- 🔌 **CLI-Agnostic Interface**: Backed by a robust `automated_pipeline` and scheduler daemon, perfectly compatible with terminal workflow engines for tests, scripts, and deep IDE integration.
+### Multi-Level Adaptive Compression (Auto-Compress)
+
+As Hybrid documents bloat through iterations, `evaluatorX` automatically triggers a tiered compression strategy:
+
+| Level | Trigger | Action |
+|-------|---------|--------|
+| **L0** Healthy | < 10KB / 200 lines | No action |
+| **L1** Light | 10-15KB / 200-300 lines | Deduplicate file indexes, archive expired checkpoints |
+| **L2** Standard | 15-25KB / 300-500 lines | Clean knowledge graph fragments, consolidate scattered entries |
+| **L3** Deep | > 25KB / 500 lines | Full restructure: merge entities, sync memory snapshots, slim static sections |
+
+Progressive compression eliminates the ultimate pain point: "AI getting dumber during prolonged battles."
+
+### Prompt Optimization Engine (Prompt-Master)
+
+Built-in **prompt-master** skill generates production-grade prompts for 20+ AI tools (Claude, GPT, Gemini, Cursor, Copilot, etc.):
+
+- **9-Dimension Intent Extraction**: Silently analyzes task, target tool, output format, constraints, and more
+- **Tool-Specific Routing**: Auto-matches optimal prompting strategies per model (e.g., no CoT for reasoning-native models)
+- **6-Category Fault Scanning**: Detects and fixes ambiguity, missing context, format drift, and more
+- **Copy-Paste Ready**: Outputs a single prompt block requiring zero manual edits
+
+### Hybrid Docs × Indexing × Memory Graph — Maximum Token Savings
+
+Three-layer collaboration that dramatically cuts context overhead:
+
+**Layer 1: Hybrid Document Topology (Prompt Caching)**
+- Strict zoning: **Static** (requirements, scope, DoD — rarely changes), **Incremental** (acceptance criteria, file indexes), **Dynamic** (evaluation reports — overwritten each round)
+- Static sections at the top hit LLM Prompt Cache continuously; dynamic sections at the bottom don't invalidate cached tokens when overwritten
+- Token costs stay minimal even after 100+ conversation turns
+
+**Layer 2: Trunk-Leaf Index Separation**
+- Markdown documents retain only business "trunk" outlines — no code detail dumps
+- Entity relations, code structures ("leaves") are maintained separately in the MCP Knowledge Graph
+- Agents fetch on-demand, keeping engineering documents lean
+
+**Layer 3: Memory Graph Snapshot**
+- Hybrid doc §8.2 stores only **skeleton pointers** to knowledge graph entities (names, relation summaries)
+- Full leaf-node details are persisted by MCP server-memory
+- L3 deep compression auto-syncs graph state, ensuring doc-graph consistency
+- Cross-session, cross-agent knowledge sharing without redundant context transfer
+
+> **Combined effect**: Static requirements trigger cache hits → incremental indexes enable targeted references → memory graph loads on-demand. Every SubAgent wake-up gets the minimum viable input tokens.
+
+### 🤖 Seamless Auto / Semi-Auto Shift
+
+Because cross-agent state is continuously persisted via clear Markdown/Text hybrid docs, human developers can safely pause, intervene, and guide the workflow by directly editing the documents for the next agent.
+
+### 🧹 Zero Context Pollution
+
+Strictly filters input information for each sub-agent. By blocking redundant long-history chats, it significantly drops the statistical probability of LLM hallucinations.
 
 ## ⚙️ Setup & Installation
 
@@ -50,39 +98,109 @@ npm install -g @modelcontextprotocol/server-memory @modelcontextprotocol/server-
 
 ## 🚀 Workflow & Usage
 
-**1. Framework Nature & Client Integration**
-WorkflowX is essentially a **lightweight, pure text-based configuration and instruction system**. It avoids rigid application lock-in, meaning you can seamlessly plug it into any AI IDE clients that support Agent/Skill architectures (e.g., **GitHub Copilot, Claude Code, or Codex**).
-> 💡 **Highly Recommended: GitHub Copilot**. Its native workspace context awareness and seamless SubAgent mounting capabilities synergize perfectly with this framework's pipeline logic and prompt caching models.
+### 1. Platform Integration
 
-**2. Awaken the Orchestrator & Iterate**
-- Call `@orchestratorX` (the master agent) and deliver your development intention or execution command (e.g., `/whole` for global development, `/local` for targeted hot-reloading).
-- **plannerX (The Planner)**: Takes control of the initial requirements. Through multi-turn dialogue, it distills the intent into a single binding specification: `[Module]-hybrid.md`.
-- **coderX (The Coder)**: Develops and verifies code based on the hybrid document. Once completed, it outputs a summary of changes via a minimalist "Bus Pipeline Payload".
-- **evaluatorX (The Evaluator)**: Directionally inspects code changes and specs based on the Pipeline Payload. It writes an audit report directly into the `hybrid` document, proposes the next targeted payload for fixes, and hands control back.
-- Iteration loops can be safely constrained (e.g., max 2 rounds to prevent infinite loops) using the `-N` configuration parameter.
+WorkflowX is a **lightweight, pure text-based configuration and instruction system**. No runtime lock-in, no extra services to install — just copy the config files into your project directory and deploy.
 
-## 💎 Core Advantages: Solving AI Development Bottlenecks
+Three platform configurations are provided out of the box:
 
-**1. Bus Pipeline Mechanism — Eradicating Context Hallucinations**
+| Platform | Config Directory | Notes |
+|----------|-----------------|-------|
+| **Claude Code** | `.claude/` | agents + skills, native SubAgent support |
+| **OpenAI Codex** | `.codex/` | agents (`.toml`) + skills, full parity |
+| **GitHub Copilot** | `.github/` | agents (`.agent.md`) + skills + instructions |
+
+> All three configurations share **identical workflow logic** — the same 7 commands, 3 modes, and 6 runtime modules. Only the tool-call syntax differs per platform.
+
+**Quick Setup:**
+1. Copy the relevant config directory (e.g., `.claude/`) into your project root
+2. Install MCP dependencies: `npm install -g @modelcontextprotocol/server-memory @modelcontextprotocol/server-sequential-thinking`
+3. Mount MCP config in your AI client (see `mcp.json.template`)
+4. Start using: call orchestratorX in your chat and deliver your requirements
+
+### 2. Command Reference
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `/whole [req]` | Full-repo workflow (plan → code → evaluate) | `/whole implement user login module` |
+| `/whole -box demo` | Execute in sandbox branch `demo`, isolated from main | `/whole -box auth refactor auth logic` |
+| `/whole -parallel` | Auto-split independent tasks and dispatch in parallel | `/whole -parallel batch fix lint warnings` |
+| `/whole -N 3` | Cap evaluator iterations at 3 (default: 2) | `/whole -N 3 optimize DB query performance` |
+| `/local [req]` | Local module development, skips PRD planning | `/local fix order list pagination bug` |
+| `/unit [req]` | Minimal single-task change, no evaluation | `/unit add timeout config to Config class` |
+| `/prompt [text]` | Optimize a prompt only, no dev workflow triggered | `/prompt write me a login page prompt` |
+| `/switch whole` | Force-switch workflow mode mid-task | `/switch unit` |
+| `/rollback [iter]` | Rollback to a specific iteration checkpoint | `/rollback 1` |
+| `/status` | Check completion status of the hybrid document | `/status` |
+
+> By default, all development requests are routed through orchestratorX. Exceptions: pure file reads, config edits, Git operations, or when the user explicitly says "directly do it."
+
+### 3. Three Workflow Modes
+
+orchestratorX auto-routes based on requirement complexity, or you can specify manually:
+
+```
+/whole  → [plannerX plan] → [promptMasterX optimize] → [coderX implement] → [evaluatorX evaluate] → loop
+/local  → [promptMasterX optimize] → [coderX implement] → [evaluatorX evaluate] → loop
+/unit   → [promptMasterX optimize] → [coderX implement] → done
+```
+
+| | `/whole` Global | `/local` Scoped | `/unit` Minimal |
+|---|---|---|---|
+| **Use case** | New features, cross-module refactors | 1-2 module changes | Single-file fixes, small edits |
+| **PRD planning** | plannerX generates full hybrid doc | Skipped | Skipped |
+| **Evaluation loop** | evaluatorX auto-runs, up to N rounds | evaluatorX runs, up to N rounds | Only on explicit request |
+| **Checkpoints** | Auto-created each iteration | Auto-created each iteration | Not mandatory |
+| **Sandbox branch** | `-box` supported | Not supported | Not supported |
+| **Parallel dispatch** | `-parallel` supported | Not supported | Not supported |
+
+### 4. Walkthrough: A Complete `/whole` Session
+
+Suppose you want to add a "User Login" feature to your project:
+
+```
+① Initiate the request
+   /whole implement user login with email+password and OAuth support
+
+② orchestratorX auto-routes to whole mode
+   → plannerX analyzes requirements, generates [UserLogin]-hybrid.md
+   → You review the hybrid doc, confirm it's correct, reply "confirmed"
+
+③ promptMasterX optimizes the execution prompt
+   → Translates confirmed requirements into precise coderX instructions
+
+④ coderX implements based on the prompt
+   → Outputs Bus Payload: "Completed auth module login logic,
+     added oauth_callback handling. Focus review on token refresh flow"
+
+⑤ evaluatorX reviews directionally based on the Payload
+   → Writes audit report to the bottom of the hybrid doc
+   → If issues found, generates fix Payload and hands back to coderX
+     (up to N rounds)
+
+⑥ Iteration complete
+   → evaluatorX confirms pass, hybrid doc finalized
+   → Optionally call abstracterX for a code summary
+```
+
+**Human Intervention**: At any point between steps, you can directly edit the hybrid document to adjust requirements, modify constraints, or correct direction. The next agent will automatically read your changes on startup.
+
+### 5. Multi-Platform Collaboration
+
+Since config directories are independent, you can use the same workflow across tools:
+
+- **Claude Code CLI**: `.claude/agents/orchestratorX.md` defines agent behavior
+- **VS Code + Copilot**: `.github/agents/orchestratorX.agent.md` uses VSCode-native tool bindings
+- **OpenAI Codex CLI**: `.codex/agents/orchestratorX.toml` uses TOML format config
+
+All three share the same skill definitions (in each platform's `skills/` directory), ensuring consistent workflow behavior.
+
+## 💎 Bus Pipeline Mechanism — Eradicating Context Hallucinations
+
 The biggest flaw in traditional AI development is the continuous stacking and pollution of dialog context, causing the AI to drift off course. WorkflowX solves this via isolated SubAgents and a "Bus Pipeline":
 - **Pristine Awakening**: When sub-agents (coder, evaluator) are awakened, they do not inherit redundant discussions and historical errors. They start fresh, focused, and operating at absolute peak intelligence every time.
 - **Payload Handoff**: Agents do not throw long historical texts at each other. They feed each other minimalist "Payloads." (E.g., coderX outputs: "I focused on fixing Logic B in File A, please review directionally"). This drastically improves evaluation focus and almost entirely eliminates hallucinations.
-
-**2. Agile Single Source of Truth — Hybrid Docs Constraint**
-Agile development requires spontaneous shifts in direction, but scattered PRDs often lose sync with the code. 
-- The entire iteration lifecycle relies on just ONE living document: `[Feature]-hybrid.md`. Static requirements are kept at the top, incremental knowledge in the middle, and volatile code health reports at the bottom. It is transparently transmitted to the AI while safely allowing human developers to pause, intervene, or seamlessly rewrite at any point.
-
-**3. Customized Core Skill Set — Breaking the Token Barrier**
-We've finely customized a suite of Skills that precisely combat common LLM structural catastrophes:
-- **Prompt Caching Restructure**: Strictly mandates the topological layout of the Hybrid Document—rock-solid "Core Requirements" sit at the top for permanent cache hits, while the "Evaluation Report" (rewritten every round) sits at the very bottom. This saves massive token costs and ensures lightning-fast responses even after a hundred turns of conversation.
-- **Graph Separation Architecture (Trunk vs Leaves)**: Explicitly forbids dumping massive chunks of code logic into Markdown. Markdown only retains the business "Trunk" outline. Detailed entity relations and code constraints ("Leaves") are forcibly extracted and maintained within a server-based MCP Knowledge Graph. Agents dynamically fetch these as needed, keeping engineering documents lean.
-- **Auto-Compress Mechanism**: A custom threshold cleaning mechanism. Once the Evaluator detects a Hybrid Document exceeding 15KB or 300 lines, it automatically triggers abstract fragment consolidation to sweep out graph garbage. This functionally solves the fatal pain point of "AI getting dumber during prolonged battles".
-
-## 📂 Core Modules
-
-- `script/baseWorkFlow/automated_pipeline.py`: The heart of workspace snapshot listening and automation pipeline, monitoring repo file changes and state transitions.
-- `script/baseWorkFlow/worker_daemon.py`: The worker daemon that handles low-level system communication and terminal interaction (including advanced background keystroke injection orchestration).
-- `docx/`: Directory designated for passing the core hybrid state and knowledge docs between sub-agents.
+- **Single Source of Truth**: The entire iteration lifecycle relies on just ONE living document: `[Feature]-hybrid.md`. Static requirements at the top, incremental knowledge in the middle, code health reports at the bottom. Transparently transmitted to AI while safely allowing human intervention at any point.
 
 ## 🌟 About
 
